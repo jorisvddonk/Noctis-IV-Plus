@@ -4595,6 +4595,9 @@ void planetary_main ()
 				_close (oh);
 				//
 			    wserror:
+				if (i9997!=-1) _close (i9997);
+				if (i9998!=-1) _close (i9998);
+				if (i9999!=-1) _close (i9999);
 				remove ("..\\GALLERY\\SNAP9997.BMP");
 				remove ("..\\GALLERY\\SNAP9998.BMP");
 				remove ("..\\GALLERY\\SNAP9999.BMP");
@@ -4641,7 +4644,7 @@ void planetary_main ()
 			else {
 				if (w=='+' && surlight < 63) surlight++;
 				if (w=='-' && surlight > 10) surlight--;
-				if (w == '*' && !widesnapping) {
+				if ((w == '*' || w == 'm') && !widesnapping) {
 					dzat_x = backup_dzat_x;
 					dzat_y = backup_dzat_y;
 					dzat_z = backup_dzat_z;
@@ -4650,7 +4653,7 @@ void planetary_main ()
 					dzat_y = 0;
 					dzat_z = 0;
 				}
-				if (w == '/' && !widesnapping) {
+				if ((w == '/' || w == 'n') && !widesnapping) {
 					snapshot (9997, 0);
 					widesnapping = 1;
 				}

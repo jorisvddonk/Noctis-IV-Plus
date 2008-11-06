@@ -3658,7 +3658,9 @@ void main ()
 			//QUADWORDS = pqw;
 		}
 		//
-		sync_stop ();
+		if (!ontheroof) {
+		   sync_stop ();
+		}
 		//
 		// Hook per la gestione dei moti delle caratteristiche
 		// di superficie dei pianeti (come le macchie che si
@@ -3676,7 +3678,9 @@ void main ()
 		if (ontheroof) {
 			if (tasto_premuto()) {
 				c = attendi_pressione_tasto();
-				if (c=='*') snapshot (0, 1);
+				if (c=='*' || c=='m') {
+                                  snapshot (0, 1);
+                                }                              
 			}
 			else
 				c = 0;
@@ -3750,7 +3754,7 @@ void main ()
 			}
 			else {
 				goesk_a_reentry:
-				if (c=='*') {
+				if (c=='*' || c=='m') {
 					snapshot (0, 1);
 					goto endmain;
 				}
