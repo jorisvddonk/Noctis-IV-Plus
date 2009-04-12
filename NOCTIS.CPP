@@ -5,9 +5,10 @@
 
 */
 
+#include "defs.h"                //NICE defines
 #include "noctis-d.h"
 #include "noctis-0.h"
-
+#include "noctis-2.h"
 const double deg = M_PI / 180;
 
 extern char exitflag;
@@ -443,7 +444,7 @@ char gnc_pos = 0;			// Numero carattere in command line.
 long goesfile_pos = 0;			// Posizione sul file output di GOES.
 char goesnet_command[120] = "_";	// Command line di GOES Net.
 char *comm = "..\\DATA\\COMM.BIN";	// File di comunicazione dei moduli.
-
+int roofspeed;
 /* Congela la situazione (all'uscita dal programma o al run di un modulo). */
 
 void freeze ()
@@ -451,10 +452,13 @@ void freeze ()
 	int fh = _creat (situation_file, 0);
 	if (fh==-1) return;
 
-	_write (fh, &sync, 245);
+	_write (fh, &sync, old_currentbin_length);
 	_write (fh, &gnc_pos, 1);
 	_write (fh, &goesfile_pos, 4);
 	_write (fh, goesnet_command, 120);
+	WRITEFILE (fh, &lastSnapshot, sizeof(lastSnapshot));				//36
+	WRITEFILE (fh, &option_mouseLook, sizeof(option_mouseLook));				//40
+	WRITEFILE (fh, &roofspeed, sizeof(roofspeed));
 	_close (fh);
 }
 
@@ -1169,6 +1173,17 @@ void other_vehicle_at (double ovhx, double ovhy, double ovhz)
 /* Fine roba importata da noctis-0.cpp */
 
 /* Variabili globali di uso generico. */
+int moviedelay;
+char moviestat = 0;
+int moviefsec = 1;
+extern int movieexists;
+extern char movie;
+extern int movienr;
+extern char movieflashoff;
+extern int moviefscap;
+extern int moviestime;
+extern int moviedeck;
+int moviepaused=0;
 
 unsigned char far * ctrlkeys     = (unsigned char far *) 0x00000417;
 
@@ -1966,6 +1981,10 @@ void unfreeze ()
 		_read (fh, &gnc_pos, 1);
 		_read (fh, &goesfile_pos, 4);
 		_read (fh, goesnet_command, 120);
+		READFILE (fh, &lastSnapshot, sizeof(lastSnapshot));				//36
+		READFILE (fh, &option_mouseLook, sizeof(option_mouseLook));				//40
+		READFILE (fh, &roofspeed, sizeof(roofspeed));
+		strcpy(fcs_status_extended, fcs_status_extended);
 		_close (fh);
 	}
 	else
@@ -2068,7 +2087,17 @@ void main ()
 {
 	float satur, DfCoS;
      //	float user_drawing_range;
-
+	char *planetd[] = { "INTERNALLY HOT",
+				   "CRATERIZED NO ATMOSPHERE",
+				   "THICK ATMOSPHERE",
+				   "FELISIAN",
+				   "CREASED NO ATMOSPHERE",
+				   "THIN ATMOSPHERE",
+				   "LARGE NOT CONSISTENT",
+				   "ICY",
+				   "QUARTZ",
+				   "SUBSTELLAR OBJECT",
+				   "COMPANION STAR" };
 	long  ir,  ig,  ib,  ire  = 0, ige  = 0, ibe  = 0;
 	long  ir2, ig2, ib2, ir2e = 0, ig2e = 0, ib2e = 0;
 	long  ir3, ig3, ib3, ir3e = 0, ig3e = 0, ib3e = 0;
@@ -2211,6 +2240,7 @@ void main ()
 
 	do {
 		sync_start ();
+		
 		//
 		// Controllo del flag che indica quando ci si trova
 		// sulla "terrazza panoramica", il tetto dello stardrifter.
@@ -2336,6 +2366,7 @@ void main ()
 		//
 		// Input del mouse per gli spostamenti dell'utente.
 		//
+		
 		p_mpul = mpul; mpul = 0;
 		mouse_input ();
 		if (mpul&2) {
@@ -2685,11 +2716,13 @@ void main ()
 			else
 				helptime = 0;
 		}
+		
 		//
 		// Tracciamento della navicella.
 		//
 		from_user ();
 		vehicle (opencapcount);
+		
 		//
 		// Tracciamento riflessi, aggiornamento dello schermo
 		// del gestore, tracciamento dello schermo del gestore,
@@ -2830,9 +2863,9 @@ void main ()
 		//
        nohud_1: alfa = 0; beta = 0; change_angle_of_view ();
 		cam_x = -512; cam_y = -275; cam_z = -750;
-		c = strlen(fcs_status) - 1;
+		c = strlen(fcs_status_extended) - 1;
 		while (c >= 0) {
-			digit_at (fcs_status[c], -6, -15, 6, 120, 1);
+			digit_at (fcs_status_extended[c], -6, -15, 6, 120, 1);
 			cam_x += 45;
 			c--;
 		}
@@ -2929,14 +2962,25 @@ void main ()
 									case 4: tmp_float *= 1 + 50 * fast_flandom();
 								}
 							}
+							wrouthud (14, 97, c,   "                 RADIUS:");
 							wrouthud (14, 97, c, "PRIMARY MASS:");
-							sprintf (outhudbuffer, "%1.8f BAL. M.", tmp_float);
+							sprintf (outhudbuffer, "                %1.4f", ap_target_ray);
+							FitOutHudBuffer(16, 24);
 							wrouthud (14, 103, c, outhudbuffer);
+							sprintf (outhudbuffer, "%1.8f", tmp_float);
+							FitOutHudBuffer(0, 8);
+							sprintf (outhudbuffer+strlen(outhudbuffer), " BAL M");
+
+							wrouthud (14, 103, c, outhudbuffer);
+								
+							wrouthud (14, 109, c, "              CENTIDYAMS");
 							tmp_float /= 0.38e-4 * ap_target_ray;
 							if (ap_target_class == 6) tmp_float *= 0.0022;
-							wrouthud (14, 113, c, "SURFACE TEMPERATURE:");
+							//wrouthud (14, 113, c, "SURFACE TEMPERATURE:");
+							wrouthud (14, 116, c, "SURFACE TEMPERATURE:");
 							sprintf (outhudbuffer, "%1.0f@K&%1.0f@C&%1.0f@F", tmp_float + 273.15, tmp_float, tmp_float*1.8 + 32);
-							wrouthud (14, 119, c, outhudbuffer);
+							//wrouthud (14, 119, c, outhudbuffer);
+							wrouthud (14, 122, c, outhudbuffer);
 							sprintf (outhudbuffer, "MAJOR BODIES: %d EST.", starnop (ap_target_x, ap_target_y, ap_target_z));
 							wrouthud (14, 129, c, outhudbuffer);
 						}
@@ -2973,7 +3017,8 @@ void main ()
 						}
 						else
 							wrouthud (14, 103, c, "TOO FAR TO ESTIMATE");
-						wrouthud (14, 113, c, "PERIOD OF REVOLUTION:");
+					
+						wrouthud (14, 110, c, "PERIOD OF REVOLUTION:");
 						tmp_float = rtp (ip_targetted);
 						p1 = tmp_float * 1e-9;
 						p2 = tmp_float * 1e-6; p2 %= 1000;
@@ -2987,7 +3032,15 @@ void main ()
 							else
 								sprintf (outhudbuffer, "%ld EPOCS, %03ld:???:???", p1, p2);
 						}
-						wrouthud (14, 119, c, outhudbuffer);
+						wrouthud (14, 116, c, outhudbuffer);						
+						sprintf (outhudbuffer, "       %s", planetd[nearstar_p_type[ip_targetted]]);						
+						wrouthud (14, 123, c, outhudbuffer);
+						wrouthud (14, 123, c, "RADIUS:");
+						
+						sprintf (outhudbuffer, "%1.4f", nearstar_p_ray[ip_targetted]);
+						FitOutHudBuffer(16, 24);
+						sprintf (outhudbuffer+strlen(outhudbuffer), " CENTIDYAMS");
+						wrouthud (14, 129, c, outhudbuffer);
 					}
 					else
 						wrouthud (14, 87, 21, "LOCAL TARGET NOT SET");
@@ -3171,7 +3224,12 @@ void main ()
 			dyy = dzat_y - ply;
 			dzz = dzat_z - plz;
 			if (ip_reached && sync) {
-				status ("TRACKING", 0);
+				if (moviestat) {
+					status ("MOVIEMAKER", 0);
+				}
+				else {
+					status ("TRACKING", 0);
+				}
 				if (sync==1) { // fixed-point chase
 					ang = (double)deg * (double)navigation_beta;
 					hold_z = 1.8;
@@ -3290,6 +3348,8 @@ void main ()
 			}
 			else
 				ir -= 25 / dsd;
+			
+
 			if (ir > 0) {
 				if (pwr >= 20000 && charge >= 120) {
 					status ("! FULL !", 100);
@@ -3657,10 +3717,12 @@ void main ()
 			//pcycle (s_background, 1);
 			//QUADWORDS = pqw;
 		}
-		//
-		if (!ontheroof) {
+
+		// added roofspeed flag as a switchable option ('s' key) (neuzd)
+		if (!ontheroof || !roofspeed){
 		   sync_stop ();
 		}
+
 		//
 		// Hook per la gestione dei moti delle caratteristiche
 		// di superficie dei pianeti (come le macchie che si
@@ -3675,17 +3737,121 @@ void main ()
 		// Input da tastiera: snapshot, fine sessione,
 		// selezione bersagli, attribuzione labels etc...
 		//
+		if (movie) {
+			moviedelay = moviedelay - 1;
+			if (moviedelay <= 0) {
+				snapshot (0, 0);
+				moviedelay = moviefsec;
+			}
+		}
 		if (ontheroof) {
 			if (tasto_premuto()) {
 				c = attendi_pressione_tasto();
-				if (c=='*' || c=='m') {
-                                  snapshot (0, 1);
-                                }                              
+				if (!c) {
+					c = attendi_pressione_tasto();
+					// moved as I changed the controls to allow movie (neuzd)
+					/*if (c=='*' || c=='m'){
+	                	snapshot (0, 1);
+	                }
+	                if (c=='b') {
+						snapshot (0, 0);
+					}
+					*/
+	                if (c==0x3D){								// f3 - moviestat
+						if (moviestat == 0){
+							moviestat = 1;
+							
+						}
+						else {
+							moviestat = 0;
+						}
+					}
+					if (c==144 && moviestat && !movie) {					//add 1 to moviedeck
+						if (moviedeck < 999) {
+							moviedeck++;
+							/*sprintf (snapfilename, "..\\MOVIES\\%02i\\00000001.BMP", moviedeck);
+							FILE * tmpFile = fopen(snapfilename, "r");
+							if (tmpFile == NULL) {
+								movieexists = 0;
+							} else {
+								movieexists = 1;
+							}*/
+							movieexists = 0;
+							movienr = 0;
+						}
+					}
+					if (c==142 && moviestat && !movie ) {					//substract 1 from moviedeck
+						if (moviedeck > 1) {
+							moviedeck--;
+							/*sprintf (snapfilename, "..\\MOVIES\\%02i\\00000001.BMP", moviedeck);
+							FILE * tmpFile = fopen(snapfilename, "r");
+							if (tmpFile == NULL) {
+								movieexists = 0;
+							} else {
+								movieexists = 1;
+							}*/	
+							movieexists = 0;
+							movienr = 0;
+						}
+					}
+				}
+				else
+				{
+					if (c=='*' || c=='m'){
+	                	snapshot (0, 1);
+	                }
+	                if (c=='b') {
+						snapshot (0, 0);
+					}
+					if (c==13) {
+						if (movie == 0 && moviestat) {
+							movie = 1;
+							moviefscap = 0;
+							moviestime = gtime;
+							moviestat = 0;
+							movienr = 0;
+							moviepaused = 0;
+						}
+						else if (movie == 1) {
+	                                           movie = 0;
+	                                           movieexists = 0;
+	                                           moviedeck++;
+	                                           moviepaused = 0;
+	                                          }
+					}
+					if (c=='f' && moviestat && !movie) {
+						if (movieflashoff == 1) movieflashoff = 0;
+						else movieflashoff = 1;
+					}
+					// Added a pause feature when filming a movie (neuzd)
+					if (c == 'p')
+					{
+						if (movie)
+						{
+							movie = 0;
+							moviestat = 1;
+							moviepaused = 1;
+							status ("PAUSE REC",100);
+						}
+						else
+						{
+							if (moviestat && moviepaused)
+							{
+								movie = 1;
+								moviestat = 0;
+								moviepaused = 0;
+								status ("RESUME REC",100);
+							}
+						}
+					}
+				}
 			}
 			else
 				c = 0;
+			
 			goto endmain;
 		}
+		
 		//
 		// non saprei...
 		// un'istruzione di debug,
@@ -3715,6 +3881,95 @@ void main ()
 			c = attendi_pressione_tasto();
 			if (!c) {
 				c = attendi_pressione_tasto();
+				if (c==0x3D){								// f3 - moviestat
+					if (moviestat == 0){
+						moviestat = 1;
+						
+						char tempsnapfile[24];
+						if (movieexists == 0)
+						{								//let's check if the moviedeck exists already.... But only if the moviedeck has been changed lately.
+							//wrouthud (10,90, NULL, "CHECKING!!!");
+							sprintf (tempsnapfile, "..\\MOVIES\\%03i\\00000001.BMP", moviedeck);
+							FILE * tmpFile = fopen(tempsnapfile, "r");
+							if (tmpFile == NULL) {
+								movieexists = 1;
+							} else {
+								movieexists = 2;
+							}
+							fclose(tmpFile);
+						}
+						char  short_text[11];
+						if (movieexists == 2)
+						{
+							sprintf (short_text, "%i EXISTS", moviedeck);
+							status(short_text,100);
+						}
+						else
+						{
+							sprintf (short_text, "MD %i FREE", moviedeck);
+							status(short_text,100);
+						}
+					}
+					else {
+						moviestat = 0;
+						status("MVMENU OFF",100);
+					}
+				}
+				if (c==144 && moviestat && !movie) {					//add 1 to moviedeck
+					if (moviedeck < 999) {
+						moviedeck++;
+						char tempsnapfile[24];
+						sprintf (tempsnapfile, "..\\MOVIES\\%03i\\00000001.BMP", moviedeck);
+						FILE * tmpFile = fopen(tempsnapfile, "r");
+						if (tmpFile == NULL) {
+							movieexists = 1;
+						} else {
+							movieexists = 2;
+						}
+						fclose(tmpFile);
+						char  short_text[11];
+						if (movieexists == 2)
+						{
+							sprintf (short_text, "%i EXISTS", moviedeck);
+							status(short_text,100);
+						}
+						else
+						{
+							sprintf (short_text, "MD %i FREE", moviedeck);
+							status(short_text,100);
+						}
+						//movieexists = 0;
+						movienr = 0;
+					}
+				}
+				if (c==142 && moviestat && !movie ) {					//substract 1 from moviedeck
+					if (moviedeck > 1) {
+						moviedeck--;
+						char tempsnapfile[24];
+						sprintf (tempsnapfile, "..\\MOVIES\\%03i\\00000001.BMP", moviedeck);
+						FILE * tmpFile = fopen(tempsnapfile, "r");
+						if (tmpFile == NULL) {
+							movieexists = 1;
+						} else {
+							movieexists = 2;
+						}
+						fclose(tmpFile);
+						char  short_text[11];
+						if (movieexists == 2)
+						{
+							sprintf (short_text, "%i EXISTS", moviedeck);
+							status(short_text,100);
+						}
+						else
+						{
+							sprintf (short_text, "MD %i FREE", moviedeck);
+							status(short_text,100);
+						}
+						//movieexists = 0;
+						movienr = 0;
+					}
+				}
+				
 				goesk_e_reentry:
 				if (targets_in_range) {
 					if (c == 80) {
@@ -3751,12 +4006,101 @@ void main ()
 				}
 				if (c==72)
 					lifter = -100;
+				
 			}
 			else {
 				goesk_a_reentry:
-				if (c=='*' || c=='m') {
+				if (c=='*' || c=='m' && !(labstar || labplanet) ) {
 					snapshot (0, 1);
 					goto endmain;
+				}
+				if (c=='b' && !(labstar || labplanet) ) {
+					snapshot (0, 0);
+					goto endmain;
+				}
+				if (c=='+' && moviestat && moviefsec < 999 && !movie)
+				{
+					moviefsec++;
+					char  short_text[11];
+					sprintf (short_text, "CAPT %i FR", moviefsec);
+					status(short_text,100);
+				}
+				if (c=='-' && moviestat && moviefsec > 1 && !movie )
+				{
+					moviefsec--;
+					char  short_text[11];
+					sprintf (short_text, "CAPT %i FR", moviefsec);
+					status(short_text,100);
+				}
+				if (c == 13) {
+					if (!ip_targetting && !labstar && !labplanet && !targets_in_range && !manual_target)
+					{
+						if (movie == 0 && moviestat) {
+							status ("RECORDING",50);
+							movie = 1;
+							moviefscap = 0;
+							moviestime = gtime;
+							moviestat = 0;
+							movienr = 0;
+							moviepaused = 0;
+						}
+						else if (movie == 1)
+						{
+							status ("STOP REC",50);
+	                        movie = 0;
+	                        movieexists = 0;
+	                        moviedeck++;
+	                        moviepaused = 0;
+	                        //movieexists = 2;
+	                    }
+                	}
+				}
+				if (c=='f' && moviestat && !movie) {
+					if (movieflashoff == 1)
+					{
+						movieflashoff = 0;
+						status("BLK FLASH", 100);
+					}
+					else
+					{
+						movieflashoff = 1;
+						status("NO FLASH", 100);
+					}
+				}
+				if (c=='s')
+				{
+					if (roofspeed)
+					{
+						roofspeed = 0;
+						status("NO ROOFSPD",50);
+					}
+					else
+					{
+						roofspeed = 1;
+						status("ROOFSPEED",50);
+					}
+					
+				}
+				// Added a pause feature when filming a movie (neuzd)
+				if (c == 'p')
+				{
+					if (movie)
+					{
+						movie = 0;
+						moviestat = 1;
+						moviepaused = 1;
+						status ("PAUSE REC",100);
+					}
+					else
+					{
+						if (moviestat && moviepaused)
+						{
+							movie = 1;
+							moviestat = 0;
+							moviepaused = 0;
+							status ("RESUME REC",100);
+						}
+					}
 				}
 				if (data) {
 					if (c == 27) {
@@ -3974,10 +4318,16 @@ void main ()
 						case '9': s_command = 4; commands (); break;
 					}
 				}
-				if (c=='+' && surlight < 63) surlight++;
-				if (c=='-' && surlight > 10) surlight--;
+				if (c=='+' && surlight < 63 && !moviestat) surlight++;
+				if (c=='-' && surlight > 10 && !moviestat) surlight--;
+				//if (c=='+' && surlight < 63) surlight++;
+				//if (c=='-' && surlight > 10) surlight--;
 			}
-	endmain: }
+	endmain: 
+		
+		
+		
+		}
 		}
 		else
 			c = 0;

@@ -80,20 +80,115 @@
 */
 
 #define larghezza 250
+#include <dos.h>
+#include "defs.h"
 
-#include <assembly.h>
-#include <tdpolygs.h>
+#include "assembly.h"
+#include "tdpolygs.h"
 
 #include <stdio.h>
 #include <time.h>
-#include <gfx.h>
+#include "gfx.h"
 #include <io.h>
 
 int n = 0;
+int backgr = 0;
+int arrowcol = 0;
+int showhelp = 0;
 float aux;
 
 float far *x, *y, *z;
 unsigned char far *nv, *color;
+
+char digimap[65*5] = {							// we need this for the showing of the help.
+	 0, 0, 0, 0, 0, // 32. spazio vuoto
+	 2, 2, 2, 0, 2, // 33. punto esclamativo
+	 5, 0, 0, 0, 0, // 34. virgolette
+	 0, 0, 3, 5, 5, // 35. cancelletto (rappresentato da una piccola n.)
+	 2, 2, 6, 2, 2, // 36. sistro
+	 1, 4, 2, 1, 4, // 37. percento
+	 0, 0, 2, 0, 0, // 38. e commericale (non Š possibile visualizzarla)
+	 0, 2, 2, 0, 0, // 39. apice
+	 4, 2, 2, 2, 4, // 40. parentesi tonda aperta
+	 1, 2, 2, 2, 1, // 41. parentesi tonda chiusa
+	 0, 0, 7, 2, 2, // 42. asterisco
+	 0, 2, 7, 2, 0, // 43. segno pi—
+	 0, 0, 0, 2, 1, // 44. virgola
+	 0, 0, 7, 0, 0, // 45. segno meno
+	 0, 0, 0, 0, 2, // 46. punto
+	 0, 4, 2, 1, 0, // 47. barra destrorsa
+	 7, 5, 5, 5, 7, // 48. 0
+	 3, 2, 2, 2, 7, // 49. 1
+	 7, 4, 7, 1, 7, // 50. 2
+	 7, 4, 6, 4, 7, // 51. 3
+	 4, 6, 5, 7, 4, // 52. 4
+	 7, 1, 7, 4, 7, // 53. 5
+	 7, 1, 7, 5, 7, // 54. 6
+	 7, 4, 4, 4, 4, // 55. 7
+	 7, 5, 7, 5, 7, // 56. 8
+	 7, 5, 7, 4, 4, // 57. 9
+	 0, 2, 0, 2, 0, // 58. duepunti
+	 0, 2, 0, 2, 1, // 59. punto e virgola
+	 4, 2, 1, 2, 4, // 60. minore
+	 0, 7, 0, 7, 0, // 61. uguale
+	 1, 2, 4, 2, 1, // 62. maggiore
+	 7, 4, 6, 0, 2, // 63. punto interrogativo
+	 0, 2, 0, 0, 0, // 64. a commerciale (non visualizzabile)
+	 7, 5, 7, 5, 5, // 65. A
+	 7, 5, 3, 5, 7, // 66. B
+	 7, 1, 1, 1, 7, // 67. C
+	 3, 5, 5, 5, 3, // 68. D
+	 7, 1, 3, 1, 7, // 69. E
+	 7, 1, 3, 1, 1, // 70. F
+	 7, 1, 5, 5, 7, // 71. G
+	 5, 5, 7, 5, 5, // 72. H
+	 2, 2, 2, 2, 2, // 73. I
+	 4, 4, 4, 5, 7, // 74. J
+	 5, 5, 3, 5, 5, // 75. K
+	 1, 1, 1, 1, 7, // 76. L
+	 7, 7, 5, 5, 5, // 77. M
+	 5, 7, 7, 5, 5, // 78. N
+	 7, 5, 5, 5, 7, // 79. O
+	 7, 5, 7, 1, 1, // 80. P
+	 7, 5, 5, 1, 5, // 81. Q
+	 7, 5, 3, 5, 5, // 82. R
+	 7, 1, 7, 4, 7, // 83. S
+	 7, 2, 2, 2, 2, // 84. T
+	 5, 5, 5, 5, 7, // 85. U
+	 5, 5, 5, 5, 2, // 86. V
+	 5, 5, 7, 7, 5, // 87. W
+	 5, 5, 2, 5, 5, // 88. X
+	 5, 5, 7, 2, 2, // 89. Y
+	 7, 4, 2, 1, 7, // 90. Z
+	 0, 0, 6, 2, 2, // 91. parentesi quadra aperta
+	 1, 3, 7, 3, 1, // 92. barra sinistrorsa
+	 2, 2, 6, 0, 0, // 93. parentesi quadra chiusa
+	 2, 2, 2, 2, 2, // 94. ordinale femminile
+	 0, 0, 0, 0, 7, // 95. sottolinea
+	 1, 2, 0, 0, 0  // 96. accento
+};
+
+void wrouthud (int x, int y, int l, char *text, int color = 191) // we need this for the showing of the help.
+{
+	int j, i, n;
+	int spot;
+
+	n = 0; if (!l) l = 32767;
+	spot = y * 320 + x;
+
+	while (text[n] && n < l) {
+		j = (text[n] - 32) * 5;
+		for (i = 0; i < 5; i++) {
+			if (digimap[j + i] & 1) adapted[spot+0] = color - adapted[spot+0];
+			if (digimap[j + i] & 2) adapted[spot+1] = color - adapted[spot+1];
+			if (digimap[j + i] & 4) adapted[spot+2] = color - adapted[spot+2];
+			spot += 320;
+		}
+		spot -= 320 * 5;
+		spot += 4;
+		n++;
+	}
+}
 
 void main ()
 {
@@ -123,6 +218,7 @@ void main ()
 
 	initscanlines ();
 
+	
 	tavola_colori (range8088,   0, 64,  0, 63,  0);
 	tavola_colori (range8088,  64, 64, 63,  0,  0);
 	tavola_colori (range8088, 128, 64, 63, 63,  0);
@@ -138,11 +234,33 @@ void main ()
 		_read (fh, color, n);
 		_close (fh);
 	}
+	
+	/*
+		Word n: Number of polygons
+		Uchar[n] nv: Number of vertices for each polygon
+		float[n*4] x: X coordinates for each vertex (You always have 4 vertices in the file per polygon, even if nv says 3. The 4th is just ignored by NIV in that case.)
+		float[n*4] y: Y coordinates for each vertex 
+		float[n*4] z: Z coordinates for each vertex 
+		Uchar[n] color:	
+		
+		The first polygon has x,y,z 0-3, the second polygon has 4-7, etc.
+	
+		
+	*/
 
 	uneg = 1;
-
 	do {
+		if (backgr == 0) {
+		pclear (adapted, 0);
+		} else if (backgr == 1) {
 		pclear (adapted, 32);
+		} else if (backgr == 2) {
+		pclear (adapted, 230);
+		} else if (backgr == 3) {
+		pclear (adapted, 120);
+		} else if (backgr == 4) {
+		pclear (adapted, 191);
+		}
 		mpul = 0; mouse_input ();
 		if (mpul) {
 			if (mpul==1) {
@@ -169,10 +287,10 @@ void main ()
 		cam_z = orz;
 		Forward (-chase);
 		for (c=0, p=0; p<n; c+=4, p++) {
-			if (p!=psel)
-				poly3d (x+c, y+c, z+c, nv[p], color[p]);
-			else
-				poly3d (x+c, y+c, z+c, nv[p], 254);
+			if (p!=psel) {
+				poly3d (x+c, y+c, z+c, nv[p], color[p]);			//draw polygon "the normal way"
+			} else
+				poly3d (x+c, y+c, z+c, nv[p], 254);					//draw polygon in blue (selected polygon).
 		}
 		for (c=0; c<v; c++) {
 			vx[0] = x[n*4+c]; vy[0] = y[n*4+c]-1; vz[0] = z[n*4+c];
@@ -191,7 +309,11 @@ void main ()
 		vx[0] = crx; vy[0] = cry; vz[0] = crz;
 		vx[1] = crx+10; vy[1] = cry+8; vz[1] = crz-10;
 		vx[2] = crx+4; vy[2] = cry+14; vz[2] = crz-4;
-		poly3d (vx, vy, vz, 3, 64+ink);
+		if (arrowcol == 1) {
+		poly3d (vx, vy, vz, 3, 0+ink); //draw arrow green
+		} else if (arrowcol == 0) {
+		poly3d (vx, vy, vz, 3, 64+ink);//draw arrow red (normal)
+		}
 		if (tasto_premuto()) {
 			pcrx = crx;
 			pcry = cry;
@@ -210,6 +332,11 @@ void main ()
 					case 145: if (d>1) d--; break;
 					case 0x84: orz+=d; break;
 					case 0x76: orz-=d; break;
+					case 0x3B:
+						showhelp = showhelp + 1;
+						if (showhelp == 2)
+						showhelp = 0;
+					 break;
 				}
 				i = 0;
 			}
@@ -373,6 +500,16 @@ void main ()
 							color[c] = aux;
 						 }
 						 break;
+					case 'z':
+						backgr = backgr + 1;
+						if (backgr == 5)
+						backgr = 0;
+						 break;
+					case 'x':
+						arrowcol = arrowcol + 1;
+						if (arrowcol == 2)
+						arrowcol = 0;
+						 break;
 					case 'c':for (c=0; c<n; c++) {
 							aux = color[c] - 32;
 							aux *= 0.9;
@@ -396,6 +533,10 @@ void main ()
 							color[c] = aux;
 						 }
 						 break;
+					case 'n':
+						psel++;
+						if (psel>=n) psel=-1;
+						break;
 					case 's':if (psel>-1) { psel = -1; break; }
 						 k = 1E9;
 						 psel = -1;
@@ -496,7 +637,7 @@ void main ()
 		sprintf (temptesto, "CRH %d; %d; %d", (int)crx, (int)cry, (int)crz);
 		Testo (5, 5, temptesto, 127, NORMALE);
 		sprintf (temptesto, "PLG %d;", psel);
-		Testo (5, 15, temptesto, 127, NORMALE);
+		if (psel != -1)	Testo (5, 15, temptesto, 127, NORMALE); 	// only draw polygon indicator text when needed.
 		if (mp>-1) {
 			rx = x[4*mp+mv];
 			ry = y[4*mp+mv];
@@ -516,9 +657,52 @@ void main ()
 				}
 			}
 		}
-		pcopy (adaptor, adapted);
-		adaptor[320*my2d + mx2d] = 0;
-	} while (i!='q');
 
+		if (showhelp == 1) {
+			areaclear (adapted, 13, 14, 275, 21, 0, 0, 0);
+			wrouthud (14, 15, NULL, "                           POLYVERT+ KEYLIST");
+			areaclear (adapted, 13, 21, 275, 193, 0, 0, 72);
+			areaclear (adapted, 13, 21, 275, 22, 0, 0, 254);
+			wrouthud (14, 23, NULL, "SPACEBAR - PLACE VERTEX");
+			wrouthud (14, 29, NULL, "ENTER - CREATE POLYGON (AFTER VERTEXES ARE PLACED)");
+			wrouthud (14, 35, NULL, "BACKSPACE - CANSEL VERTEX OR LATEST POLYGON");
+			wrouthud (14, 41, NULL, "V - SELECT VERTEX AT MOUSE");
+			wrouthud (14, 47, NULL, "BACKSLASH - SELECT VERTEX AT CURSOR");
+			wrouthud (14, 53, NULL, "+ - BRIGHTEN COLOUR OF CURSOR");
+			wrouthud (14, 59, NULL, "- - DARKEN COLOUR OF CURSOR");
+			wrouthud (14, 65, NULL, ". - CHANGE CURSOR COLOR TO COLOR OF SELECTED POLYGON");
+			wrouthud (14, 71, NULL, ": - CHANGE SELECTED POLYGON COLOR TO CURSOR COLOR");
+			wrouthud (14, 77, NULL, "C - DECREASE CONTRAST");
+			wrouthud (14, 83, NULL, "SHIFT + C - INCREASE CONTRAST");
+			wrouthud (14, 89, NULL, "L - DECREASE LUMINOSITY");
+			wrouthud (14, 95, NULL, "SHIFT + L - INCREASE LUMINOSITY");
+			wrouthud (14, 101, NULL, "S - SELECT POLYGON CLOSEST TO CURSOR");
+			wrouthud (14, 107, NULL, "P - PUT SELECED POLYGON ABOVE THE OTHERS / SELECT LATEST POLYGON");
+			wrouthud (14, 113, NULL, "B - PUT SELECTED POLYGON BELOW THE OTHERS / SELECT FIRST POLYGON");
+			wrouthud (14, 119, NULL, "T - SPLIT 4-VERTEXED POLYGON INTO TWO 3-VERTEXED POLYGONS");
+			wrouthud (14, 125, NULL, "H - WARP MODEL AWAY FROM THE CURSOR (CHANGE ALL COORDINATES)");
+			wrouthud (14, 131, NULL, "O - SET CAMERA'S ORIGIN TO CURSOR'S LOCATION");
+			areaclear (adapted, 13, 137, 275, 138, 0, 0, 254);
+			wrouthud (14, 139, NULL, "SHIFT + ENTER - SAVE TO POLYVERT.NCC");
+			wrouthud (14, 145, NULL, "Q - QUIT POLYVERT WITHOUT SAVING");
+			areaclear (adapted, 13, 151, 275, 152, 0, 0, 254);
+			wrouthud (14, 153, NULL, "CURSOR KEYS/PGUP-PGDOWN - MOVE CURSOR");
+			wrouthud (14, 159, NULL, "CTRL + UP/DOWN - ALTER PRECISION OF CURSOR(!)");
+			wrouthud (14, 165, NULL, "LEFT MOUSE BUTTON + MOUSE MOVEMENT - ZOOM IN/OUT");
+			wrouthud (14, 171, NULL, "RIGHT MOUSE BUTTON + MOUSE MOVEMENT - TURN CAMERA AROUND");
+			areaclear (adapted, 13, 177, 275, 178, 0, 0, 254);
+			wrouthud (14, 179, NULL, "Z - CHANGE BACKGROUND COLOR       N - NEXT POLY.");
+			wrouthud (14, 185, NULL, "X - CHANGE CURSOR COLOR");
+			areaclear (adapted, 13, 191, 275, 192, 0, 0, 254);
+			areaclear (adapted, 13, 192, 275, 200, 0, 0, 0);
+			wrouthud (14, 193, NULL, "F1 - SHOW/HIDE THIS KEYLIST");
+		}
+		pcopy (adaptor, adapted);
+		if (backgr == 0) {
+		adaptor[320*my2d + mx2d] = 191; //plot the mouse BRIGHT
+		} else {
+		adaptor[320*my2d + mx2d] = 0; //plot the mouse DARK
+		}
+	} while (i!='q');
 	_80_25_C ();
 }

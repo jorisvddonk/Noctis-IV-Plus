@@ -1,0 +1,79 @@
+A short guide to using Polyvert.
+Err.. Scrap the 'short', this thing is longer than I wanted it to be.. *shrug*
+--------------------------------
+You sure you want to do this? :)
+
+Okay, first of all, Polyvert ALWAYS opens "polyvert.ncc" when it starts, and it's only able to save to "poylvert.ncc", too... Therefore, you should rename the file you're editing to polyvert.ncc (or just make sure there isn't a polyvert.ncc file at all, when you want to start a new model)...
+
+
+Using Polyvert isn't that hard, really.. It's only very inconvenient, and it's sometimes very hard to see what is what... But let's start..
+
+Polyvert has two "pointers".. The mouse (little black dot), and the Cursor (big red triangle o' doom).. The cursor is the thing that places vertexes, and the mouse is the thing that is just.. err.. standing in the way.. No, just kidding.. You can use the mouse to select vertexes, but more on that later.. :)
+
+In polyvert, you can either create a polygon, or a quad (3/4 vertexes). You place a vertex with the cursor. You can move the cursor aroud with the arrow keys, and the pgup/pgdown keys... However, you'll notice that it's "jumping" the cursor in steps of 5... To change that, hit Ctrl+down arrow key a few times...
+
+Now, let's place a vertex.. Hit "Space bar".. You'll notice that there's a flashy, yellow thingy at the cursor now, eh? Now move the cursor a bit, and hit the space bar again. Wee! Another yellow flashy thing! Now move the cursor AGAIN, and hit space. YaYFT (Yet Another Yellow Flashy Thing!)!!!! Okay, now we've got three of those yellow flashy thingies... Those are actually vertexes.. You can add another, but let's not do that at his moment.. Hit "Enter"... They dissapeared, eh? And nothing else happened, eh? Heh.. That's just because the default colour of the cursor produces a polygon of the same colour as the background (LART Alex for that one!)...
+
+Changing a polygon's colour. First, hit the 's' key. This will select the polygon closest to our Cursor of doom, and make it blue. There is your polygon! (Notice that the topleft of the screen says PLG: 0 instead of PLG: -1 now? Good! This just says which polygon you're selecting, and it might come in handy) :) Now, hit '+' or '-' a few times, and notice the cursor change colour (either darker or lighter)... When you're in "polygonmode" mode, you can either change the colour of the cursor by pressing '.', or you can change the polygon's colour to the colour of the cursor, by pressing ':' (note: you actually need to press shift + ';'!)... Go ahead.. Press ':'!
+
+Okay, hit 's' now, and you'll notice that the polygon has changed colour! Way better, since we can actually SEE it now! :) Okay. hit 's' again. You're in "Polygonmode" again.. Now, move the cursor a bit. Notice that the polygon moves, too? Isn't that great? This might come in very handy later on...
+
+Now, exit "Polygonmode" if you're in it.. Time for us to actually add another polygon, eh? For this, we'll use the Vertex Selector, a very handy tool to select a vertex, and place the cursor there. First, move the mouse (the little black dot on the screen) close to a polygon. When you've done that, hit 'v'. A vertex is now selected! Move the cursor around a bit, and you'll notice that the vertex wil move with the cursor, and the polygon is altered! In the top left of the screen, you'll notice some additional text. It displays which vertex of which polygon is selected. Might come in handy one day.. Done playing? Good. Hit the 'v' button again. We're out of "Vertexmode" now.. And the cursor is still placed at the vertex! Let's create another polygon from there.. Doesn't matter how it looks like and such, just MAKE it...
+
+Okay, so we've got two polygons now, connected to eachother... Move the mouse towards the point where the two polygons are connected, and hit 'v'. Notice that the topleft of the screen says that there are TWO vertexes of TWO different polygons selected? Move the cursor a bit.. Notice that BOTH THE VERTEXES are being moved, and that BOTH POLYGONS are altered? This is a very nice feature, really.. It lets you easilly change sizes of objects or object parts you've made... However, it can also be very irritating. More on that later.. :)
+
+Since there are two polygons now, let's move the viewpoint a bit, okay? :) Move the cursor away from 0,0,0 if it's there. Now hit 'o'. This will cause the screen to focus on those coordinates. Now, hold the left mouse button and move the mouse a bit. The screen will turn around! Hold the right mouse button, move the mouse a bit, and the camera will 'zoom'! Might come in handy one day, eh?
+
+Okay, time for some error refinements. This is the ONLY thing where Polyvert's editing feature REALLY sucks.. It's hard, really hard.. But okay.. Let's open the  included 'error.ncc' file using Polyvert (read back if you don't know how to)... This is meant to be a 3d triangle, but little Billy screwed up with one of his vertexes! Your task, is to fix it! Opened it? Good. Turn the camera around a bit, and guess what Billy did wrong this time.. Notice that the dark polygon is connected to the wrong polygon/vertex? Whoops! If you remember what I previously said was giving you some problems later on, you'll know that selecting the faulty vertex, and then moving it will cause ALL vertexes to move position, so editing the faulty vertex won't help us. What we need to do, is move the polygon away, edit it, and then place it back! Let's select the polygon by pressing "s", while the cursor is placed closeby the dark polygon. When it's selected, move it 10 'units' along the Z axis, by pressing 'page down'.. You'll see that the polygon is placed right now on the lower right corner if you've done it right. Now select the other vertexes of the dark polygon, and move them 10 units along the Z axis, in the other direction, by hitting 'page up'.. There! All done! The 3d triangle is fixed! Wee! Hit Shift-Enter to save your work!
+
+Now, let's explore yet another weirdness in Polyvert: the viewing method. Polyvert is made so, that the LATEST polygon is ALWAYS DISPLAYED ABOVE THE OTHER ONES.. The polygon with the highest number is drawn ABOVE THE OTHER ONES... Sorry for the caps, but this is quite important, since you'll spend at least a few hours, figuring "where the hell is that fucky polygon?".. Okay, open "error.ncc" again (or "polyvert.ncc", since you've used it before)... Turn the camera around a bit.. Notice something funky? The dark polygon always seems to be visible, eh? What if we don't want that? Well.. When you select a polygon, and hit either 'p' or 'b', it will "warp" said polygon to either the front of the rest ('p'), or the back of the rest ('b'). I know this sounds kind of funky, but you'll need it later on, especially 'p'. If you're NOT in polygonmode, and hit 'p' or 'b', however, it will either select the polygon that is in front of the rest, or the polygon that is behind the rest..
+
+Deleting a polygon... well.. not too hard, really.. All you need to know, is that 'backspace' deletes the polygon that is in front of the rest. When you create a polygon, it is automatically the one that is in front of the rest, AKA the "Latest Polygon"... But what if we want to delete a different polygon than the latest one? Not so hard.. Just select the polygon you wish to delete, hit 'p', followed by 's' (not really needed though), and then hit 'backspace'! Voila! :)
+
+Oh, nearly forgot to mention, that backspace also deletes the latest vertex you were about to place (you know, the flashy yellow thingies).. 
+
+Uuuuhm.. That was all I needed to teach you, I think. If you need help, feel free to ask me (That's "Megagun", yep) or feel free to experiment until you manged to fix it.. :)
+
+What follows, is a keylist. Might come in handy... Feel free to experiment with these keys, too, since I haven't explained them all yet.. Have fun!
+
+Oh, and please remember this: SAVE OFTEN, MAKE BACKUPS!
+-------------------------------------------------------------------------------
+Mouse movement - move mouse cursor (black pixel)
+Left and right mouse buttons, while dragging mouse - move and pan camera
+Cursor keys - move pointer along X and Y axisses
+Pgup/pgdwn - move pointer along Z axis
+Ctrl + Up/down cursor key - Alter precision of cursor (!)
+Ctrl + Pgup/pgdwn - move camera along Z axis
+
+Spacebar - place vertex
+Backspace - cancel a vertex (when placing vertexes) or latest polygon
+Enter - create polygon (after vertexes are placed)
+v - select vertex at mouse
+\ - select vertex at cursor
++ - brighten colour of cursor
+- - darken colour of cursor
+. - change cursor colour to colour of selected polygon
+: - change selected polygon colour to cursor colour
+c - reduce contrast
+C - increase contrast
+l - reduce luminosity
+L - increase luminosity
+s - select polygon closest to cursor
+p - put selected polygon above the others (change it to latest)
+b - put selected polygon below the others (change it to first)
+t - split quad (polygon with 4 vertexes) in half (makes two polygons of 3 vertexes each)
+h - warp whole model away from the cursor
+o - set camera's origin to cursor's location
+
+shift + Enter - save to POLYVERT.NCC
+q - quit Polyvert without saving
+
+
+POLYVERT++ ONLY:
+z - change background color
+x - change arrow color (from red to green, so you can see what it looks like when you put a polygon)
+F1 - show keylist
+
+
+
+

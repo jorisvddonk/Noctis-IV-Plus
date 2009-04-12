@@ -83,6 +83,20 @@
 #define off_digimap2	-60776
 #define dm2_bytes	  9360
 
+//Nevermind, we got the paths working
+#ifdef NEVERMINDWINDOWS
+#define path(folder) folder
+#else
+#define path(folder) "..\\" ##folder
+#endif
+
+#define bull_ncc path("data\\critter1.ncc")
+#define supports_nct path("data\\supports.nct")
+#define x_txt path("data\\x.txt")
+#define xbuff_txt path("data\\xbuff.txt")
+#define restart_txt path("data\\restart.txt")
+#define errors_txt path("data\\errors.txt")
+
 #define mammal_ncc	-51416
 
 #define os_voidscrn	-48664

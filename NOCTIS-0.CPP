@@ -39,7 +39,9 @@
 */
 
 #include "noctis-d.h"
-
+#include "noctis-2.h"
+#include "defs.h"
+#include <dir.h>
 /*
 
 	Dati e funzioni specifiche importate da ASSEMBLY.H
@@ -715,7 +717,7 @@ mloop:  asm {	db 0x66; and word ptr [di], ax
 
 */
 
-#include <tdpolygs.h> // 3d-Engine.
+#include "tdpolygs.h" // 3d-Engine.
 
 /*
 
@@ -803,7 +805,14 @@ int    lifter		  = 0;		// 233
 double secs		  = 0;		// 235
 char   data		  = 0;		// 243
 char   surlight		  = 16;		// 244
+Word old_currentbin_length = 245;
 
+//Additional variables: (SL and Mega)
+Dword lastSnapshot = -1;				//0
+char option_mouseLook = 0;			//4
+
+Word new_currentbin_length = 5;
+char 	fcs_status_extended[42] = "STANDBY";
 /*
 
 	Dati di controllo per lo sbarco sulla superficie.
@@ -861,6 +870,10 @@ char   	      ontheroof;
 int	      datasheetscroll = 0;
 int	      datasheetdelta = 0;
 
+
+extern int movieexists;
+extern char movie;
+ float moviefps;
 /*
 
 	Dati costanti nel segmento globale.
@@ -1055,6 +1068,7 @@ int   far *pv_dep_i[handles]; // indice distanza (ordinamento poligoni).
 
 /* Procedimenti d'estrazione di numeri pseudo-casuali. */
 
+
 long flat_rnd_seed;
 
 void fast_srand (long seed) // selezione tabella pseudo.
@@ -1104,6 +1118,21 @@ int sa_open (long offset_of_virtual_file)
 {
 	int fh;
 
+	fh = OPENFILE (supports_nct, OPEN_RB);
+	if (fh==NOFILE) return (NOFILE);
+	long ret = FILESEEK (fh, offset_of_virtual_file, SEEK_END);
+	if (ret IS_FILESEEK_VALID) {
+		return (fh);
+	} else {
+		CLOSEFILE (fh);
+		return (NOFILE);
+	}
+}
+
+/*int sa_open (long offset_of_virtual_file)
+{
+	int fh;
+
 	fh = _open ("Noctis.EXE", 0);
 	if (fh==-1) return (-1);
 
@@ -1113,7 +1142,7 @@ int sa_open (long offset_of_virtual_file)
 		_close (fh);
 		return (-1);
 	}
-}
+}*/
 
 /* Definisce una parte della tavola colori in modo che una sfumatura graduale
    vada da una tinta ad un'altra, entro un certo numero di tinte intermedie */
@@ -3354,7 +3383,138 @@ void whiteglobe (unsigned char far *target,
 		yy += 2;
 	}
 }
+extern  float moviefps;
+void CalculatemovieFPS(int moviefscap, int moviestime) {
+     float moviesecs;
+     moviesecs = (float(gtime) - float(moviestime)) / 18;
+     /*sprintf (outhudbuffer, "%2.1f MOVSECS" , moviesecs);
+     wrouthud (10, 50, NULL, outhudbuffer);*/
+     if (moviesecs != 0) {
+        moviefps = float(moviefscap) / float(moviesecs);
+     }
+}
 
+extern float moviefps;
+void ShowMovieSetup(int moviefsec, char movieflashoff, int moviedeck) {
+	//float moviesecs;
+	//float moviefps;
+	char tempsnapfile[24];
+
+	if (movieexists == 0) {								//let's check if the moviedeck exists already.... But only if the moviedeck has been changed lately.
+		//wrouthud (10,90, NULL, "CHECKING!!!");
+		sprintf (tempsnapfile, "..\\MOVIES\\%03i\\00000001.BMP", moviedeck);
+		FILE * tmpFile = fopen(tempsnapfile, "r");
+		if (tmpFile == NULL) {
+			movieexists = 1;
+		} else {
+			movieexists = 2;
+		}
+		fclose(tmpFile);
+	}
+
+	areaclear (adapted, 13, 131, 175, 180, 0, 0, 72);
+	areaclear (adapted, 13, 138, 175, 139, 0, 0, 90);
+
+	sprintf (outhudbuffer, "MOVIEDECK %3i                 (CTRL +/-)" , moviedeck);
+	wrouthud (14, 141, NULL, outhudbuffer);
+
+	sprintf (outhudbuffer, "CAPTURE EVERY %3i FRAMES           (+/-)" , moviefsec);
+	wrouthud (14, 148, NULL, outhudbuffer);
+	if (movieflashoff == 1) { wrouthud (14, 155, NULL, "NO FLASH WHEN SCREENCAPTURE          (F)"); } else {wrouthud (14, 155, NULL, "BLACK FLASH WHEN SCREENCAPTURE       (F)"); }
+
+	//warning signals
+	if ((moviefsec == 1 && movieflashoff == 0) || movieexists == 2) {
+		areaclear (adapted, 14, 161, 174, 168, 0, 0, 85);
+		wrouthud (15, 162, NULL, "WARNING:");
+	}
+	if (moviefsec == 1 && movieflashoff == 0) wrouthud (51, 162, NULL, "BLACK SCREEN!");
+	if (movieexists == 2) wrouthud (106,162, NULL, "MOVIEDECK EXISTS!");
+
+	//Recording-state-specific-displayings, including FPS-o-meter.
+	if (!movie)	{
+		wrouthud (14,169, NULL, "START RECORDING                  (ENTER)");
+
+	}
+	if (movie) {
+	//areaclear (adapted, 13, 131, 175, 180, 0, 0, 72);
+	//areaclear (adapted, 13, 138, 175, 139, 0, 0, 90);
+
+
+		areaclear(adapted, 15, 132, 130, 137, 0, 0, 82);
+		wrouthud (14,169, NULL, "STOP RECORDING                   (ENTER)");
+		/*sprintf (outhudbuffer, "%i MOVSTIME" , moviestime);
+		wrouthud (10, 20, NULL, outhudbuffer);
+		sprintf (outhudbuffer, "%i MOVFSCAP" , moviefscap);
+		wrouthud (10, 30, NULL, outhudbuffer);*/
+		//moviesecs = (float(gtime) - float(moviestime)) / 18;
+		/*sprintf (outhudbuffer, "%2.1f MOVSECS" , moviesecs);
+		wrouthud (10, 50, NULL, outhudbuffer);*/
+		//if (moviesecs != 0) {
+                        //moviefps = float(moviefscap) / float(moviesecs);
+			areaclear(adapted, 131, 131, 132, 138, 0, 0, 90);
+			sprintf (outhudbuffer, "FPS: %2.2f" , moviefps);
+			wrouthud (133, 132, NULL, outhudbuffer);
+		//}
+	}
+
+	wrouthud (14,132, NULL, "  NOCTIS IV+ MOVIEMAKER"); 				//The title. We do this at the end to allow colorings.
+
+	/*if (movieexists == 2) {
+		wrouthud (10,80, NULL, "MOVIE EXISTS ALREADY");
+	} else if (movieexists == 1) {
+		wrouthud (10,80, NULL, "MOVIE DOES NOT EXIST ALREADY - THIS IS GOOD");
+	}*/
+}
+void FitOutHudBuffer(int min, int max) {
+	int len = strlen(outhudbuffer);
+	//sprintf (outhudbuffer, "            %i", len);
+	if (len<max) {
+		int a;
+		movetextforward:
+		int move = max-len;
+		for (a=len; a>=min; a--) {
+			outhudbuffer[a+move]=outhudbuffer[a];
+			outhudbuffer[a]=' ';
+		}
+		for (a=len+1; a<max-len; a++) {
+			outhudbuffer[a]=' ';
+		}
+		//sprintf(outhudbuffer+27,"#A");
+	} else if (len>max) {
+		for (int a=len-1; a>=min; a--) {
+			if (outhudbuffer[a]=='.') {
+				if (a==max-1) {
+					outhudbuffer[max]=0;
+					len=max-1;
+					goto movetextforward;
+				} else if (a>=max) {	//34567.23 where '5' is chr 27. a is 30.
+					trimtext:
+					int missingdigits = a-(max-2);
+					int writeEAt = (max-2);
+					while (missingdigits>9) {
+						missingdigits++;
+						writeEAt--;
+					}
+					if (writeEAt<min) {
+						sprintf(outhudbuffer+min, "     !!!!!!");
+					} else {
+						sprintf(outhudbuffer+writeEAt, "E%i", (int)missingdigits);
+					}
+					outhudbuffer[max]=0;
+					break;
+				} else { //a<27
+					outhudbuffer[max]=0;
+					break;
+				}
+			}
+		}
+		if (a==min-1) {	//we finished the for loop instead of running break
+			a=len;
+			goto trimtext;
+		}
+		//sprintf(outhudbuffer+28,"#B");
+	}
+}
 /* Come sopra, ma mentre quella di sopra traccia in 4x4 pixels,
    dimezzando la risoluzione per essere pi— veloce nel tracciamento
    di globi che possono coprire tutto lo schermo, questa traccia in 1x1,
@@ -5630,9 +5790,29 @@ void collect_targets ()
 void status (char *status_description, int message_delay)
 {
 	if (message_delay >= fcs_status_delay) {
-		strcpy (fcs_status, status_description);
+		//Sadly, strcpy doesn't do length-checking, so I've had to implement this to handle that: (SL)
+		int len = strlen(status_description);
+		if (len<10) {
+			memcpy(fcs_status, status_description, len);
+			fcs_status[len]=0;
+			memcpy(fcs_status_extended, fcs_status, len+1);
+		} else if (len<41) {
+			memcpy(fcs_status, status_description, 10);
+			fcs_status[10]=0;
+			memcpy(fcs_status_extended, status_description, len);
+			fcs_status_extended[len]=0;
+		} else {
+			memcpy(fcs_status, status_description, 10);
+			fcs_status[10]=0;
+			memcpy(fcs_status_extended, status_description, 41);
+			fcs_status_extended[41]=0;
+		}
 		fcs_status_delay = message_delay;
 	}
+	/*if (message_delay >= fcs_status_delay) {
+		strcpy (fcs_status, status_description);
+		fcs_status_delay = message_delay;
+	}*/
 }
 
 /* Mappa caratteri per l'HUD:
@@ -5832,10 +6012,19 @@ void polycupola (float y_or, char textured)
 clock_t gtime;
 
 void sync_start ()
-{ gtime = clock(); }
+{ gtime = CLOCK(); }
 
 void sync_stop ()
-{ while (clock() == gtime); }
+{
+	#ifdef WINDOWS
+	//WinCycle();
+	#endif
+	while (CLOCK() == gtime) {
+		#ifdef WINDOWS
+		Sleep(1);
+		#endif
+	}
+}
 
 long   global_surface_seed;
 float  ppos_x, ppos_y, ppos_z;
@@ -5932,6 +6121,14 @@ void wrouthud (unsigned x, unsigned y, unsigned l, char *text)
 	}
 }
 
+char blinkhudlights;
+char blinkhudlights_stay;
+char blinkhudlights_flash;
+int  blnr;
+
+
+
+
 void surrounding (char compass_on, int openhudcount)
 {
 	int	cpos, crem;
@@ -5947,17 +6144,44 @@ void surrounding (char compass_on, int openhudcount)
 	lptr = 64 + 3 * surlight;
 	if (lptr > 127) lptr = 127;
 
-	areaclear (adapted, 9, 9, 0, 0, 4, 4, lptr);
-	smootharound_64 (adapted, 9, 9, 5, 1);
-
-	areaclear (adapted, 308, 9, 0, 0, 4, 4, lptr);
-	smootharound_64 (adapted, 308, 9, 5, 1);
-
-	areaclear (adapted, 9, 188, 0, 0, 4, 4, lptr);
-	smootharound_64 (adapted, 9, 188, 5, 1);
-
-	areaclear (adapted, 308, 188, 0, 0, 4, 4, lptr);
-	smootharound_64 (adapted, 308, 188, 5, 1);
+//Turn on (and make a bit larger) those lights. Blinkhudlights turns them on, and Blinkhudlights_stay
+//makes them either turn off again, or stay on until Blinkhudlights is set to 0 again.
+	if (blinkhudlights == 1) {
+		if (lptr <= 111)
+		lptr = 127;
+		else lptr = 96;
+		if (blinkhudlights_stay == 0) blinkhudlights = 0;
+			
+		blnr = blnr + 1;
+		if (blnr >= 10) {
+			if (blinkhudlights_flash == 1) {blinkhudlights_flash = 0; goto bla;}
+			if (blinkhudlights_flash == 0) blinkhudlights_flash = 1;
+				
+			bla:
+			blnr = 0;
+		}			
+		
+		if ((blinkhudlights_stay == 1 && blinkhudlights_flash == 1) || blinkhudlights_stay == 0) {
+			areaclear (adapted, 9, 9, 0, 0, 5, 5, lptr);
+			smootharound_64 (adapted, 9, 9, 5, 1);
+			areaclear (adapted, 307, 9, 0, 0, 5, 5, lptr);
+			smootharound_64 (adapted, 308, 9, 5, 1);
+			areaclear (adapted, 9, 187, 0, 0, 5, 5, lptr);
+			smootharound_64 (adapted, 9, 188, 5, 1);
+			areaclear (adapted, 307, 187, 0, 0, 5, 5, lptr);
+			smootharound_64 (adapted, 308, 188, 5, 1);
+		} else goto bla2;
+	} else {
+		bla2:
+		areaclear (adapted, 9, 9, 0, 0, 4, 4, lptr);
+		smootharound_64 (adapted, 9, 9, 5, 1);
+		areaclear (adapted, 308, 9, 0, 0, 4, 4, lptr);
+		smootharound_64 (adapted, 308, 9, 5, 1);
+		areaclear (adapted, 9, 188, 0, 0, 4, 4, lptr);
+		smootharound_64 (adapted, 9, 188, 5, 1);
+		areaclear (adapted, 308, 188, 0, 0, 4, 4, lptr);
+		smootharound_64 (adapted, 308, 188, 5, 1);
+	}
 
 	sprintf (outhudbuffer, "EPOC %d & ", epoc);
 	lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L;
@@ -6028,11 +6252,17 @@ extern long star_label_pos;
 extern char star_label[25];
 extern long planet_label_pos;
 extern char planet_label[25];
-
+int movienr;
+char movieflashoff = 1;
+char movie;
+int moviefscap;
+int moviestime;
+int moviedeck = 1;
+int movieexists;
 char snapfilename[24];
 void snapshot (int forcenumber, char showdata)
 {
-	int prog;
+    	long prog;
 	unsigned pqw;
 	double parsis_x, parsis_y, parsis_z;
 
@@ -6046,20 +6276,52 @@ void snapshot (int forcenumber, char showdata)
 
 	pqw = QUADWORDS;
 	QUADWORDS = 16000;
-	pclear (adaptor, 0);
+	//pclear (adaptor, 0);
+	if (movie == 0 || (movieflashoff == 0 && movie == 1)) {
+		pclear(adaptor, 0);
+	}
+	if (movie == 1){
+		if (movieexists == 1) {				//movie does NOT exist yet
+			sprintf (snapfilename, "..\\MOVIES\\%03i", moviedeck);		//we just use snapfilename here, so we don't have to assign any more stuff
+			mkdir("..\\MOVIES");
+            mkdir(snapfilename);										//and here we make the folder for the movie to record to.
+		}
+		if (movieflashoff == 1) {
+			if (surlight <= 38) areaclear(adaptor, 1, 198, 319, 199, 0, 1, 127);	//bright line when surroundinglight <= 38 (bright line = 127)
+				else areaclear(adaptor, 1, 198, 319, 199, 0, 1, 1);					//dark line when surroundinglight > 38 (dark line = 1)
+		}
+		moviefscap ++;
+	}
 	QUADWORDS = pqw;
 
 	if (!forcenumber) {
-		prog = -1;
+		prog = lastSnapshot;
+		char recycled=0;
 		do {
-			prog++; if (prog == 9999) return;
-			sprintf (snapfilename, "..\\GALLERY\\SNAP%04d.BMP", prog);
-			ih = _open (snapfilename, 0);
-			if (ih != -1) _close (ih);
-		} while (ih != -1);
+			if (!movie) {prog++; if (prog == 100000000) {	//Image limit increased to 99,999,999 (SL)
+				if (recycled) {
+					status("TOO MANY SNAPSHOTS", 300);
+					return;
+				} else {
+					recycled=1;
+					prog=0;
+				}
+				} }
+			if (movie == 1) {									//Recording a movie instead of doing a screenshot? Do moviestuffs...
+				movienr++;
+				sprintf (snapfilename, "..\\MOVIES\\%03i\\%08d.BMP", moviedeck, movienr);
+				remove(snapfilename);
+			} else sprintf (snapfilename, "..\\GALLERY\\%08d.BMP", prog);	//Image limit increased to 99,999,999 (SL)
+			/*}
+                        sprintf (snapfilename, "..\\GALLERY\\%08d.BMP", prog);	//Image limit increased to 99,999,999 (SL)
+            */
+			ih = OPENFILE (snapfilename, OPEN_RB);
+			if (ih != NOFILE) CLOSEFILE (ih);
+		} while (ih != NOFILE);
+		lastSnapshot = prog;
 	}
 	else
-		sprintf (snapfilename, "..\\GALLERY\\SNAP%04d.BMP", forcenumber);
+		sprintf (snapfilename, "..\\GALLERY\\WIDE%04d.BMP", forcenumber);	//Panoramic snapshots no longer overwrite pictures 9997-9999 if those happened to exist. (SL)
 
     if (showdata) {
 	areaclear (adapted, 2, 191, 0, 0, 316, 7, 64 + 63);
@@ -6158,12 +6420,14 @@ void additional_consumes()
 	if (field_amplificator	&& !(iqsecs %  41)) { pwr--; iqsecs++; }
 	//
 	if (pwr <= 15000) {
-		if (charge) {
+		if (charge>0) {
 			charge--;
 			pwr = 20000;
 			status ("FCS: READY", 100);
-		}
-		else {
+		} else if (charge<0) {	//HACK: If you set your Li+ negative, you have infinite fuel. (SL)
+			pwr = 20000;
+			status ("OMEGA", 100);
+		} else {
 			stspeed 	= 0;
 			ip_reaching 	= 0;
 			ip_reached 	= 1;

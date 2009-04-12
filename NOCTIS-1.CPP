@@ -1,5 +1,11 @@
+#include "defs.h"
 #include "noctis-d.h"
 #include "noctis-0.h"
+#include "noctis-2.h"
+// <temp> Temporary to make the code easier to mod later on
+#define FLYING_LANDER 1
+#define option_flying_lander 1
+// </temp>
 
 const double deg = M_PI / 180;
 
@@ -35,6 +41,11 @@ int   sh_delta;		// shift del puntatore di confronto per lo shading.
 
 // dati riguardanti il "sole" primario se ci si trova
 // attorno a un sole secondario (sistemi multipli di classe 8)
+char jumping;
+char jetpack;
+extern char blinkhudlights;
+extern char blinkhudlights_stay;
+
 int   pri_crepzone;
 int   pri_nightzone;
 int   pri_sun_x_factor;
@@ -311,6 +322,7 @@ void build_fractal_tree (float x, float y, float z,
 #define FORCE_LAT	11
 #define FORCE_CON	22
 #define GIANT_TREE	333
+
 
 void albero (float x, float y, float z, long depth)
 { // disegna alberi ove richiesti.
@@ -1314,7 +1326,10 @@ void fragment (long x, long z)
 	// diminuisce in generale il numero di oggetti visibili
 	// nella distanza... eh, bŠ, anche la velocit… vuole la
 	// sua parte, Š assurdo ma consigliabile. E si nota poco.
-	if (depth > 16) {
+	
+	// Extended viewfield of objects :: neuzd 
+	//if (depth > 16) {
+	if (depth > 255) {
 		count >>= 1;
 		if (!count) return;
 	}
@@ -3294,11 +3309,12 @@ char exitflag = 0; // flag: se settato al ritorno di planetary_main,
 char entryflag = 0;// flag: se settato all'ingresso di planetary_main,
 		   // significa che si sta recuperando la situazione
 		   // di superficie.
-
+int movie_paused = 0;
 void planetary_main ()
 {
 	const int widesnappingangle = 71;
-
+	
+	fcs_status_delay = 0; // no more 'ghost' UNLOCKING message (neuzd)
 	unsigned pqw = QUADWORDS;
 	long  	 cpos;
 
@@ -3309,6 +3325,17 @@ void planetary_main ()
 	char     recover    = 0;
 	char     atmosphere = 1;
 
+	
+	int moviedelay;
+	int moviefsec = 1;
+	extern int movieexists;
+	extern char movie;
+	extern int movienr;
+	extern char movieflashoff;
+	extern int moviefscap;
+	extern int moviestime;
+	extern int moviedeck;
+	int movie_cutoff=0;
 	/*global*/opencapcount= 1;
 	int	 opencapdelta = 0;
 	int	 openhudcount = 180;
@@ -3680,14 +3707,14 @@ void planetary_main ()
 	setup_animals ();
 
 /* inizio del ciclo d'esplorazione. */
-
+	char moviestat = 0;
 	int	bounces = 0;
 	int	resolve = 1;
 	float	fixed_step = 0;
 
 	int	ih, oh, i9997, i9998, i9999;
 	char	t[54];
-	int	prog;
+	long	prog;
 	long	line;
 
 	exitflag = 0;
@@ -3764,46 +3791,59 @@ void planetary_main ()
 		bkstep = step;
 		mpul = 0;
 		mouse_input ();
+		int ml = (option_mouseLook>0)?2:0;
+		FastBool mlook = (mpul&2) ^ (ml);
 		if (mpul&2) {
 			shift += mdltx;
-			dlt_alfa -= (float) mdlty / 8;
+		} else {
+			dlt_beta -= (float) mdltx / 6;
 		}
-		else {
-			if (pos_y == 0) {
-				if (nearstar_p_type[ip_targetted] == 3) {
-					if (sctype == ICY) {
-						if (mpul&1) step += 150 * landed;
-						step -= 10 * mdlty * landed;
-					}
-					else {
-						if (sctype == PLAINS) {
-							if (mpul&1) step += 75 * landed;
-							step -= 5 * mdlty * landed;
-						}
-						else {
-							if (mpul&1) step += 50 * landed;
-							step -= 2 * mdlty * landed;
-						}
-					}
+		
+		//(1 and 0) or (0 and 1)
+		if (mlook) {
+			if (option_mouseLook==1) {
+				dlt_alfa += (float) mdlty / 8;
+			} else {
+				dlt_alfa -= (float) mdlty / 8;
+			}
+		}
+		if (pos_y == 0) {
+			if (nearstar_p_type[ip_targetted] == 3) {
+				if (sctype == ICY) {
+					if (mpul&1) step += 150 * landed;
+					if (!mlook) step -= 10 * mdlty * landed;
 				}
 				else {
-					if (mpul&1) step += 125 * landed;
-					step -= 5 * mdlty * landed;
+					if (sctype == PLAINS) {
+						if (mpul&1) step += 75 * landed;
+						if (!mlook) step -= 5 * mdlty * landed;
+					}
+					else {
+						if (mpul&1) step += 50 * landed;
+						if (!mlook) step -= 2 * mdlty * landed;
+					}
 				}
+			#if defined(ALL) || defined(TEMPERATURE)
+			} else if (glassified) {
+				if (mpul&1) step += 150 * landed;
+				if (!mlook) step -= 10 * mdlty * landed;
+			#endif
+			} else {
+				if (mpul&1) step += 125 * landed;
+				if (!mlook) step -= 5 * mdlty * landed;
 			}
-			else {
-				if (mpul&1) step += 75 * landed;
-				step -= 5 * mdlty * landed;
-			}
-			dlt_beta -= (float) mdltx / 6;
-			tiredness += fabs(step) * 0.000001;
 		}
+		else {
+			if (mpul&1) step += 75 * landed;
+			if (!mlook) step -= 5 * mdlty * landed;
+		}
+		tiredness += fabs(step) * 0.000001;
 		// causa una scivolata su pareti ripide discese rapidamente,
 		// mentre in circostanze normali aggiorna la direzione di
 		// avanzamento (che pu• non coincidere con quella in cui si
 		// guarda, appunto durante le scivolate o per brevi voli su
 		// pianeti con scarsa gravit…).
-		if (pos_y < crcy) {
+		if (pos_y < crcy && (!option_flying_lander || landed) && !jetpack) { //added if jetpack is OFF (MEGA)
 			shift = bkshift;
 			step = bkstep;
 		}
@@ -3843,25 +3883,27 @@ void planetary_main ()
 			step /= 1.25; if (fabs(step)<0.5) step = 0;
 		}
 		// resistenza in salita.
-		if (landed) {
+		if (landed && !jumping) { //I added !jumping. That fixes the "jumping slowdown on steep slopes" bug. (MEGA)
 			drop_x  = pp_gravity * 0.012;
 			drop_x *= hpoint (refx, refz) - hpoint (pos_x, pos_z);
 			drop_x -= 2.4;
-			if (drop_x > 0) {
-				if (drop_x > 1)
-					drop_x = 1;
-				else
-					drop_x *= drop_x;
-				shift *= 1 - drop_x;
-				step *= 1 - drop_x;
-				pos_x = refx;
-				pos_z = refz;
-				alfa = 0; beta = directional_beta - 90; change_angle_of_view (); p_Forward (shift);
-				alfa = 0; beta = directional_beta; change_angle_of_view (); p_Forward (step);
-			}
-			if (pos_y > crcy - 1200)
-				user_alfa /= 1 + fabs(step) * 0.000064;
+		} else {
+			drop_x=0;
 		}
+		if (drop_x > 0) {
+			if (drop_x > 1)
+				drop_x = 1;
+			else
+				drop_x *= drop_x;
+			shift *= 1 - drop_x;
+			step *= 1 - drop_x;
+			pos_x = refx;
+			pos_z = refz;
+			alfa = 0; beta = directional_beta - 90; change_angle_of_view (); p_Forward (shift);
+			alfa = 0; beta = directional_beta; change_angle_of_view (); p_Forward (step);
+		}
+		if (pos_y > crcy - 1200)
+			user_alfa /= 1 + fabs(step) * 0.000064;
 		// normalizzazione area di movimento.
 		drop_x = pos_x - 1.6384E6;
 		drop_z = pos_z - 1.6384E6;
@@ -4096,14 +4138,17 @@ void planetary_main ()
 		// alle onde ed al nuoto. sulla terraferma, tende ad
 		// orientare verticalmente lo sguardo in modo da seguire
 		// l'andamento dei rilievi (salite e discese).
-		if (landed&&user_alfa>-40&&user_alfa<40) {
-			if (waving_y)
-				dlt_alfa += sin(upanddown);
+		if (landed && user_alfa>-40 && user_alfa<40) {
+			if (waving_y && !jumping)
+				dlt_alfa += sin(upanddown)/3;		//To decrease bobbing, the /3 was added.
 			else {
-				if (pos_y > crcy - 2400) {
+				//This code was making the user look down every time the time-based resync was performed.
+				//Now it only does it when we jump or use the jetpack.
+				// (SL)
+				if (jumping && pos_y > crcy - 2400) {
 					drop_x = ((float)(crcy) - pos_y) * 0.001;
 					if (drop_x < 0) drop_x *= 1.67;
-					dlt_alfa += drop_x;
+					//dlt_alfa += drop_x;	//commenting this out gives you full control over your head again.. :) (MEGA)
 				}
 			}
 		}
@@ -4162,6 +4207,13 @@ void planetary_main ()
 				pos_x -= sin(wdir) * wp * 10;
 				pos_z += cos(wdir) * wp * 10;
 			}
+		}
+		if (pos_y > (crcy - 200)){ //disable Jumping whenever you're on the ground again. (MEGA)
+			jumping = 0;
+			jetpack = 0;
+		}
+		if (pos_y < (crcy - 200)){
+			jumping = 1;
 		}
 		// controlla se si Š tornati alla capsula.
 		if (landed) {
@@ -4456,7 +4508,16 @@ void planetary_main ()
 		}
 		// annebbiamento della vista (eventuale),
 		// subito dopo che si Š stati bagnati da un'onda...
-	  ends: if (waveblur) {
+	  ends: 
+	  	// trying to have status on surface working (neuzd)
+	  	if (fcs_status_delay>0) {
+			int len = strlen(fcs_status_extended);
+			len = len+len;
+			wrouthud(160-len, 100, NULL, fcs_status_extended);
+			fcs_status_delay--;
+		}
+		
+	  	if (waveblur) {
 			ptr = waveblur;
 			while (ptr) {
 				psmooth_64 (adapted, 160);
@@ -4470,6 +4531,13 @@ void planetary_main ()
 			psmooth_64 (adapted, 160);
 			QUADWORDS = pqw;
 		}
+		
+		if (moviestat) {							//F3 - MOVIE STATUS
+			ShowMovieSetup(moviefsec, movieflashoff, moviedeck);
+		}
+		CalculatemovieFPS(moviefscap, moviestime);
+		
+		
 		// il fotogramma Š finito. ora lo visualizza.
 		surrounding (1, openhudcount);
 		QUADWORDS = 16000;
@@ -4491,6 +4559,10 @@ void planetary_main ()
 			if (opencapcount > 32) {
 				pos_y -= 20 * (opencapcount - 31);
 				landed = 0;
+				
+				// movie recording has been extended for some time during the ascent.
+				// so the control has been moved elsewhere (neuzd)
+				//movie = 0;
 			}
 			if (opencapcount > 250)
 				break;
@@ -4535,27 +4607,37 @@ void planetary_main ()
 				snapshot (9997+widesnapping, 0);
 			widesnapping++;
 			if (widesnapping == 3) {
+				char recycled;
 				widesnapping = 0;
 				user_beta += widesnappingangle;
 				//
 				ih = sa_open (header_bmp);
-				if (ih==-1) goto wserror;
-				_read (ih, t, 54);
+				if (ih==NOFILE) goto wserror;
+				READFILE (ih, t, 54);
 				t[18] = 0x94;
 				t[19] = 0x03;
-				_close (ih);
-				//
-				prog = -1;
+				CLOSEFILE (ih);
+				prog = lastSnapshot;
+				recycled=0;
 				do {
-					prog++; if (prog == 9999) goto wserror;
-					sprintf (snapfilename, "..\\GALLERY\\SNAP%04d.BMP", prog);
-					ih = _open (snapfilename, 0);
-					if (ih != -1) _close (ih);
-				} while (ih != -1);
-				//
-				i9997 = _open ("..\\GALLERY\\SNAP9997.BMP", 0);
-				i9998 = _open ("..\\GALLERY\\SNAP9998.BMP", 0);
-				i9999 = _open ("..\\GALLERY\\SNAP9999.BMP", 0);
+					prog++; if (prog == 100000000) {	//Image limit increased to 99,999,999 (SL)
+						if (recycled) {
+							status("TOO MANY SNAPSHOTS", 300);
+							goto wserror;
+						} else {
+							recycled=1;
+							prog=0;
+						}
+					}
+					sprintf (snapfilename, "..\\GALLERY\\%08d.BMP", prog);	//Image limit increased to 99,999,999 (SL)
+					ih = OPENFILE (snapfilename, OPEN_RB);
+					if (ih != NOFILE) CLOSEFILE (ih);
+				} while (ih != NOFILE);
+				lastSnapshot = prog;
+				//Panoramic snapshots no longer overwrite pictures 9997-9999 if those happened to exist. (SL)
+				i9997 = _open ("..\\GALLERY\\WIDE9997.BMP", 0);
+				i9998 = _open ("..\\GALLERY\\WIDE9998.BMP", 0);
+				i9999 = _open ("..\\GALLERY\\WIDE9999.BMP", 0);
 				if (i9997 == -1 || i9998 == -1 || i9999 == -1) {
 					if (i9997 != -1) _close (i9997);
 					if (i9998 != -1) _close (i9998);
@@ -4595,13 +4677,42 @@ void planetary_main ()
 				_close (oh);
 				//
 			    wserror:
+				//Fixed the taking-panoramic-screenshots-b0rks-stuff bug. (SL)
+				//(Alex forgot to close the original screenshot files before deleting them)
 				if (i9997!=-1) _close (i9997);
 				if (i9998!=-1) _close (i9998);
 				if (i9999!=-1) _close (i9999);
-				remove ("..\\GALLERY\\SNAP9997.BMP");
-				remove ("..\\GALLERY\\SNAP9998.BMP");
-				remove ("..\\GALLERY\\SNAP9999.BMP");
+				remove ("..\\GALLERY\\WIDE9997.BMP");
+				remove ("..\\GALLERY\\WIDE9998.BMP");
+				remove ("..\\GALLERY\\WIDE9999.BMP");
 			}
+		}
+		
+		// movie stuff
+		if (movie) {
+			moviedelay = moviedelay - 1;
+			if (moviedelay <= 0) {
+				widesnapping = 0;
+				snapshot (0, 0);
+				moviedelay = moviefsec;
+				
+			}
+			// the counter increases every gameplay frame (not recorded frames)
+			// and starts only if the pod is being recalled to the SD.  
+			if (!landed && recover)
+				movie_cutoff++;
+				
+			// movie recording shuts off after 100 frames (neuzd)
+			// this is because if we leave the movie going, the pod won't be
+			// able to leave the planet.
+			// In this way we can record a portion of the ascent.
+			if (movie_cutoff > 100)
+			{
+				movie = 0;
+				moviedeck++;
+				movieexists=0;
+				movie_paused = 0;
+			}	
 		}
 		// controllo tastiera.
 		while (tasto_premuto()) {
@@ -4614,6 +4725,59 @@ void planetary_main ()
 				}
 				if (w == 0x51)
 					openhuddelta = +5;
+				if (w == 83){								// Delete - RAWSNAP  ( also "b")
+					snapshot (0, 0);
+				}
+				
+				if (w==0x3D){								// f3 - moviestat
+					if (moviestat == 0){
+						moviestat = 1;
+						
+					}
+					else {
+						moviestat = 0;
+					}
+				}
+				if (w == 0x48){
+					//user_alfa = user_alfa - 1;
+					option_mouseLook++;
+					if (option_mouseLook>2) option_mouseLook=0;
+					if (option_mouseLook==0) {
+						status("MOUSELOOK DISABLED", 50);
+					} else if (option_mouseLook==1) {
+						status("MOUSELOOK ENABLED", 50);
+					} else {
+						status("INVERTED Y AXIS", 50);
+					}
+				}
+				if (w==144 && moviestat && !movie) {					//add 1 to moviedeck
+					if (moviedeck < 999) {
+						moviedeck++;
+						/*sprintf (snapfilename, "..\\MOVIES\\%02i\\00000001.BMP", moviedeck);
+						FILE * tmpFile = fopen(snapfilename, "r");
+						if (tmpFile == NULL) {
+							movieexists = 0;
+						} else {
+							movieexists = 1;
+						}*/
+						movieexists = 0;
+						movienr = 0;
+					}
+				}
+				if (w==142 && moviestat && !movie ) {					//substract 1 from moviedeck
+					if (moviedeck > 1) {
+						moviedeck--;
+						/*sprintf (snapfilename, "..\\MOVIES\\%02i\\00000001.BMP", moviedeck);
+						FILE * tmpFile = fopen(snapfilename, "r");
+						if (tmpFile == NULL) {
+							movieexists = 0;
+						} else {
+							movieexists = 1;
+						}*/	
+						movieexists = 0;
+						movienr = 0;
+					}
+				}
 				/*if (w == 80) {
 					latitude++;
 					alfa = deg * (90 - latitude);
@@ -4642,9 +4806,36 @@ void planetary_main ()
 				}*/
 			}
 			else {
-				if (w=='+' && surlight < 63) surlight++;
-				if (w=='-' && surlight > 10) surlight--;
-				if ((w == '*' || w == 'm') && !widesnapping) {
+				//if (w=='+' && surlight < 63) surlight++;
+				//if (w=='-' && surlight > 10) surlight--;
+				if (w=='+' && surlight < 63 && !moviestat) surlight++;
+				if (w=='-' && surlight > 10 && !moviestat) surlight--;
+
+				if (w=='+' && moviestat && moviefsec < 999 && !movie) moviefsec++;
+				if (w=='-' && moviestat && moviefsec > 1 && !movie ) moviefsec--;
+				if (w==13) {
+					if (movie == 0 && moviestat) {
+						movie = 1;
+						moviefscap = 0;
+						moviestime = gtime;
+						moviestat = 0;
+						movienr = 0;
+						movie_paused = 0;
+					}
+					else if (movie == 1) {
+                                           movie = 0;
+                                           //movieexists = 2;
+                                           movieexists = 0;
+                                           moviedeck++;
+                                           movie_paused = 0;
+                                          }
+				}
+				if (w=='f' && moviestat && !movie) {
+					if (movieflashoff == 1) movieflashoff = 0;
+					else movieflashoff = 1;
+				}
+
+				if ((w == '*'  || w == 'm' ) && !widesnapping) {
 					dzat_x = backup_dzat_x;
 					dzat_y = backup_dzat_y;
 					dzat_z = backup_dzat_z;
@@ -4657,62 +4848,63 @@ void planetary_main ()
 					snapshot (9997, 0);
 					widesnapping = 1;
 				}
-				if (w == '1') {
-					if (fixed_step == 10)
+				if (w >= 48 && w <= 57) {
+					w = w - 48;
+					if (fixed_step == (w * 10))
 						fixed_step = 0;
 					else
-						fixed_step = 10;
+						fixed_step = (w * 10);
+					goto endtype;
 				}
-				if (w == '2') {
-					if (fixed_step == 20)
-						fixed_step = 0;
+				if ((w == 'b') && widesnapping==0) {                // b - RAWSNAP (also 'delete')
+					snapshot (0, 0);
+				}
+				if (w == 'c') {
+					jetpack = 0;
+				}
+				if (w == 'j') {
+					if (pos_y > crcy - 10) {
+					gravity -= gravity + 500;
+					jumping = 1;
+				        }
+				}
+				if (w == 32) { //pressin spacebar? JETPACK THE HELL OUTTA HERE!!! :P (MEGA)
+					if (landed) {	//Jetpack shouldn't work if you're in the lander (SL)
+						blinkhudlights = 1;
+						blinkhudlights_stay = 0;
+						if (pos_y > crcy - 150 ) {
+							gravity -=gravity + 500;
+						} else {
+							gravity = gravity - 50;
+							jumping = 1;
+							jetpack = 1;
+						}
+					}
+				}
+				// Added a pause feature when filming a movie (neuzd)
+				if (w == 'p')
+				{
+					if (movie)
+					{
+						movie = 0;
+						moviestat = 1;
+						movie_paused = 1;
+					}
 					else
-						fixed_step = 20;
+					{
+						if (moviestat && movie_paused)
+						{
+							movie = 1;
+							moviestat = 0;
+							movie_paused = 0;
+						}
+					}
 				}
-				if (w == '3') {
-					if (fixed_step == 30)
-						fixed_step = 0;
-					else
-						fixed_step = 30;
+				
+				if (w == 'l' && pos_y < crcy + 10) { //Mommy, can I return now to the surface? (MEGA)
+					gravity = gravity + 400;
 				}
-				if (w == '4') {
-					if (fixed_step == 40)
-						fixed_step = 0;
-					else
-						fixed_step = 40;
-				}
-				if (w == '5') {
-					if (fixed_step == 50)
-						fixed_step = 0;
-					else
-						fixed_step = 50;
-				}
-				if (w == '6') {
-					if (fixed_step == 60)
-						fixed_step = 0;
-					else
-						fixed_step = 60;
-				}
-				if (w == '7') {
-					if (fixed_step == 70)
-						fixed_step = 0;
-					else
-						fixed_step = 70;
-				}
-				if (w == '8') {
-					if (fixed_step == 80)
-						fixed_step = 0;
-					else
-						fixed_step = 80;
-				}
-				if (w == '9') {
-					if (fixed_step == 90)
-						fixed_step = 0;
-					else
-						fixed_step = 90;
-				}
-				if (w == '0')
-					fixed_step = 0;
+
 				if (w == 27 && landed) {
 					sfh = _creat (surface_file, 0);
 					if (sfh != -1) {
@@ -4737,6 +4929,7 @@ void planetary_main ()
 				}
 			}
 		}
+		endtype:
 	} while (1);
 
 	/* operazioni di recupero per ritornare al ciclo principale. */

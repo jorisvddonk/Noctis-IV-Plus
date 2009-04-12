@@ -1,0 +1,42 @@
+Noctis IV+
+Noctis IV CE features backported into vanilla Noctis IV
+-------------------------------------------------------------------------
+NOCTIS IV CE CONTRIBUTORS (some of these might not have things in NOCTIS IV+, though):
+Besides Megagun and Shadowlord (and of course Alex!), the following people have contributed code or other tools/files:
+Bensel	(Hopper highlighting code)
+The Reflection	(Exponential atmospheric pressure)
+Ees33 (New surface algorithm and surface fixes, which are currently disabled but in the source still)
+MopedSlug - USERS MANUAL
+Stargazer - Additions to USERS MANUAL
+Ireclan - Additions to USERS MANUAL
+Ryan J. Bury - I think he's got some stuff inside the USERS MANUAL, too..
+Mvgulik - Help.com module
+-------------------------------------------------------------------------
+
+
+Release 0:
+
+Vanilla Noctis IV, with the 'speedup' disabled
+
+
+Release 1:
+
+ADD: 'm' is now an alias for taking a snapshot, and 'n' is now an alias for taking a panoramic shapshot
+FIX: Panoramic snapshots don't bug up Noctis IV anymore
+CHANGE: Speedup on the roof of the stardrifter is now enabled.
+
+
+Release PRE-2:
+####NOTES####
+On every startup, it says SYSTEM RESET (or at least seemed to). Perhaps related to the new current.bin format where I add in LastSnapshot???
+Mouselook will have to be looked at further (enable in spacemode? proper STATUS writeout on surfaces?)
+
+CHANGE: Kicked supports.nct out of noctis.exe (it's now a seperate file again inside the DATA folder)
+CHANGE: Small internal changes (#include defs.h)
+ADD: Makefile, compile.bat
+ADD: 'b' and 'delete' are now aliases for taking a 'raw' snapshot (without starname/planetname data)
+ADD: Jetpack and jumping (including the 'c' jetpack directonal control cutoff key)
+CHANGE: Snapshots are now numbered NICE-style ('00000001.BMP') instead of NIV-style ('SNAP0001.BMP'). This allows for way more screenshots.
+ADD: Mouselook. Hit the UP key whilst on a surface to change mouselook (there are 3 modes). Doesn't work in space (did it work in space in NICE? I never used a different mouselook other than the default (NIV's)).
+ADD: Omega Drive. No flashy Omega Drive status inside the SD though, and you'll have to hexedit your current.bin to enable it.. ;)
+(..MORE TO COME as R2 hasn't been released yet..)

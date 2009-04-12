@@ -1,6 +1,7 @@
 extern int QUADWORDS;
 extern unsigned char far *adaptor;
 extern unsigned char far *adapted;
+extern float moviefps;
 extern void reach_your_dir (void);
 extern void _320_200_256 (void);
 extern void _80_25_C (void);
@@ -27,7 +28,7 @@ extern void pfade (unsigned char far *target, unsigned segshift, unsigned char s
 extern void psmooth_64 (unsigned char far *target, unsigned segshift);
 extern void smootharound_64 (unsigned char far *target, long cx, long cy, long r, char diffuse);
 extern void mask_pixels (unsigned char far *target, unsigned char mask);
-
+extern char fcs_status_extended[42];
 const TEXTURE_XSIZE = 256; // Larghezza delle BMP.
 const TEXTURE_YSIZE = 256; // Altezza delle BMP.
 extern long XSIZE, YSIZE; // calibrazione BMP.
@@ -156,6 +157,10 @@ extern int    lifter;
 extern double secs;
 extern char   data;
 extern char   surlight;
+
+extern Word old_currentbin_length;
+extern Dword   lastSnapshot;
+extern char   option_mouseLook;
 
 extern char   land_now;
 extern char   landing_point;
@@ -456,7 +461,7 @@ extern double targets_table_py[50];
 extern double targets_table_pz[50];
 extern void collect_targets (void);
 extern void status (char *status_description, int message_delay);
-
+//extern void wrouthud (unsigned x, unsigned y, unsigned l, char *text, Word color = 191);
 extern float flandom ();
 extern float fast_flandom ();
 
