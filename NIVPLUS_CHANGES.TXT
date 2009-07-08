@@ -1,5 +1,8 @@
-Noctis IV+
+Noctis IV+ Release 2
 Noctis IV CE features backported into vanilla Noctis IV
+-------------------------------------------------------------------------
+Noctis IV+ has been primarily worked on by Megagun and Neuzd, but it uses
+code made for and by the Noctis IV CE project. 
 -------------------------------------------------------------------------
 NOCTIS IV CE CONTRIBUTORS (some of these might not have things in NOCTIS IV+, though):
 Besides Megagun and Shadowlord (and of course Alex!), the following people have contributed code or other tools/files:
@@ -12,6 +15,11 @@ Ireclan - Additions to USERS MANUAL
 Ryan J. Bury - I think he's got some stuff inside the USERS MANUAL, too..
 Mvgulik - Help.com module
 -------------------------------------------------------------------------
+
+---------
+Changelog
+---------
+
 
 
 Release 0:
@@ -26,17 +34,25 @@ FIX: Panoramic snapshots don't bug up Noctis IV anymore
 CHANGE: Speedup on the roof of the stardrifter is now enabled.
 
 
-Release PRE-2:
-####NOTES####
-On every startup, it says SYSTEM RESET (or at least seemed to). Perhaps related to the new current.bin format where I add in LastSnapshot???
-Mouselook will have to be looked at further (enable in spacemode? proper STATUS writeout on surfaces?)
-
+Release 2:
 CHANGE: Kicked supports.nct out of noctis.exe (it's now a seperate file again inside the DATA folder)
 CHANGE: Small internal changes (#include defs.h)
 ADD: Makefile, compile.bat
 ADD: 'b' and 'delete' are now aliases for taking a 'raw' snapshot (without starname/planetname data)
 ADD: Jetpack and jumping (including the 'c' jetpack directonal control cutoff key)
 CHANGE: Snapshots are now numbered NICE-style ('00000001.BMP') instead of NIV-style ('SNAP0001.BMP'). This allows for way more screenshots.
-ADD: Mouselook. Hit the UP key whilst on a surface to change mouselook (there are 3 modes). Doesn't work in space (did it work in space in NICE? I never used a different mouselook other than the default (NIV's)).
+ADD: Mouselook. Hit the UP key whilst on a surface to change mouselook (there are 3 modes). Doesn't work in space.
 ADD: Omega Drive. No flashy Omega Drive status inside the SD though, and you'll have to hexedit your current.bin to enable it.. ;)
-(..MORE TO COME as R2 hasn't been released yet..)
+ADD: Moviemaker (works also in space, same controls as in NICE plus a pause function and some other improvements; moviemaking manual has also been added to the package).
+ADD: Raw snapshot while in space (I don't really know if this feature was lost...).
+ADD: Radius info now displayed in the Remote and Local target data windows.
+ADD: Status messages on surface now work (ie: mouselook change).
+FIX: 'm' key snapshot doesn't bug labeling anymore.
+CHANGE: Extended viewfield of objects.
+CHANGE: Roofspeed has now a switch to control it (press 's' while in the SD).
+ADD: Bundled 'help.com' module again
+
+Release 2.1:
+NOTE: I didn't update this package with the new starmap and guide for almost 2 months. So the occasion of finally updating the archive, made me feel I had to fix these little bugs. April, 2009 starmap update has been incorporated.
+FIX: DL module has been updated. It now correctly shows the number of notes of the main object, if queried about a planet (previously it still showed the # of notes of the star).
+FIX: 's' and 'p' don't activate their respective functions when labeling, anymore.

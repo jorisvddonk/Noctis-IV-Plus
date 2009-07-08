@@ -758,6 +758,7 @@ char labprogr2[80];
 long fpart (double id, char *label)
 {
 	long	fpart, no;
+	
 	int	attempts = 0;
 	double	multiplier = 1E9;
 
@@ -770,11 +771,13 @@ long fpart (double id, char *label)
 	id = fabs(id);
 
 	do {
-		fpart = multiplier * ((double)id - (long)id);
+		
+		double lid = floor(id);
+		fpart = multiplier * ((double)id - (double)lid);
 		multiplier *= 1000;
 		attempts++;
-	} while (fpart < 1E6 && attempts < 44);
-
+	}while (fpart < 1E6 && attempts < 44) ; 
+	
 	return (fpart);
 }
 
@@ -824,6 +827,8 @@ void listplanets ()
 	else
 		fp_star_check = fpart (star_id, "F-PARTTESTSTARLABEL Sxx");
 
+
+
 	warn ("ORGANIZING TREE...", 1);
 
 	ap_target_x = laststar_x;
@@ -832,21 +837,22 @@ void listplanets ()
 	extract_ap_target_infos ();
 	prepare_nearstar ();
 
+	
 	sprintf (textbuffer, "*%s", subjectname);
 	msg (textbuffer);
 
-	ncount = notesabout (star_id);
-	if (ncount > 0) {
-		sprintf (textbuffer, "]   (%ld NOTES)", ncount);
-		msg (textbuffer);
-	}
-
 	if (query == 1) {
+		ncount = notesabout (star_id);
+		if (ncount > 0) {
+			sprintf (textbuffer, "]   (%ld NOTES)", ncount);
+			msg (textbuffer);
+		}
 		pcount = 0;
 		lseek (fh, 4, SEEK_SET);
 		while (_read (fh, &object_id, 8) && _read (fh, &object_label, 24) == 24) {
 			fp_object_check = fpart (object_id, object_label);
 			if (memcmp (&object_id, "Removed:", 8) && fp_object_check == fp_star_check && object_id > star_id + 1 - idscale && object_id <= star_id + MAX_OBJECTS_PER_STAR + idscale) {
+			
 			planet_nr  = object_label[23] - '0';
 			planet_nr += 10 * (object_label[22] - '0');
 			if (nearstar_p_owner[planet_nr - 1] == -1) {
@@ -990,6 +996,11 @@ void listplanets ()
 	}
 
 	if (query == 2) {
+		ncount = notesabout (object_id);
+		if (ncount > 0) {
+			sprintf (textbuffer, "]   (%ld NOTES)", ncount);
+			msg (textbuffer);
+		}
 		planet_id  = object_label[23] - '0';
 		planet_id += 10 * (object_label[22] - '0');
 		mcount = 0;
@@ -1085,7 +1096,7 @@ void main ()
 		msg ("PLEASE RUN AGAIN,");
 		msg ("SPECIFYING PARAMETERS");
 		msg (divider);
-		msg ("(DL REVISION 6011/27)");
+		msg ("(DL REVISION 6011/29)");
 		return;
 	}
 	else {

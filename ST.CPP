@@ -762,7 +762,8 @@ long fpart (double id, char *label)
 	id = fabs(id);
 
 	do {
-		fpart = multiplier * ((double)id - (long)id);
+		double lid = floor(id);
+		fpart = multiplier * ((double)id - (double)lid);
 		multiplier *= 1000;
 		attempts++;
 	} while (fpart < 1E6 && attempts < 44);
@@ -871,7 +872,7 @@ void main ()
 		msg ("PLEASE RUN AGAIN,");
 		msg ("SPECIFYING PARAMETERS");
 		msg (divider);
-		msg ("(ST REVISION 6011/27)");
+		msg ("(ST REVISION 6011/28)");
 		return;
 	}
 	else {
