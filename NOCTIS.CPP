@@ -1574,12 +1574,12 @@ void devices ()
 				command (4, "set target to parsis");
 			cline (1, "epoc ");
 			other (alphavalue((long)epoc)); other (" triads ");
-			lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L;
-			other (alphavalue(lsecs)); other (",");
+			lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L; lsecs%=1000;
+			other (formatTriad(lsecs)); other (",");
 			lsecs = secs; lsecs %= 1000000L; lsecs -= lsecs % 1000; lsecs /= 1000;
-			other (alphavalue(lsecs)); other (",");
+			other (formatTriad(lsecs)); other (",");
 			lsecs = secs; lsecs %= 1000;
-			other (alphavalue(lsecs));
+			other (formatTriad(lsecs));
 			cline (2, "parsis universal coordinates: ");
 			asm {	fld dzat_x
 				frndint

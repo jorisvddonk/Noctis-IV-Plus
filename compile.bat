@@ -1,9 +1,9 @@
 rem @echo off
-set path=C:\BORLANDC\bin;C:\BORLANDC\INCLUDE
-rem set INCLUDE=C:\BORLANDC\INCLUDE
+set path=C:\bc.31\bin;C:\bc.31\INCLUDE
+rem set INCLUDE=C:\bc.31\INCLUDE
 if not exist bin mkdir bin
 cd bin
-del *.* /q
+rem del *.* /q
 cd ..
 
 if exist bin\noctis.exe del bin\noctis.exe
@@ -15,8 +15,12 @@ goto done
 :success
 copy bin\noctis.exe ..\modules\noctis.exe /y
 copy supports.nct ..\data /y
-copy bull.ncc ..\data\critter1.ncc /y
 
 rem del noctis.exe
 pause
 :done
+
+cd ..
+modules\noctis.exe
+cd ..
+cd source

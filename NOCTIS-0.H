@@ -342,6 +342,7 @@ extern void modpv (int handle, int polygon_id, int vertex_id,
 		   pvlist *vertexs_to_affect);
 //--------------------------------------------------------------------------//
 extern char *alphavalue (double value);
+extern char *formatTriad (double value);
 extern void background (unsigned start,
 		 unsigned char far *target,
 		 unsigned char far *background,

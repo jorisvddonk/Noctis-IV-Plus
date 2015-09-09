@@ -56,3 +56,8 @@ Release 2.1:
 NOTE: I didn't update this package with the new starmap and guide for almost 2 months. So the occasion of finally updating the archive, made me feel I had to fix these little bugs. April, 2009 starmap update has been incorporated.
 FIX: DL module has been updated. It now correctly shows the number of notes of the main object, if queried about a planet (previously it still showed the # of notes of the star).
 FIX: 's' and 'p' don't activate their respective functions when labeling, anymore.
+
+Release 2.2:
+FIX: Epoc 6012's triad sinister was calculated incorrectly and started with a '1'.
+CHANGE: Triad sinister/medius/dexter are now padded with zeros. This makes the transition from Epoc 6011 to Epoc 6012 look nicer.
+UPDATED starmap.

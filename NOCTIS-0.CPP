@@ -2683,6 +2683,15 @@ char *alphavalue (double value)
 	return (dec);
 }
 
+/* Formats triad dexter/medius/sinister properly */
+
+char *formatTriad (double value)
+{
+	char *outbuffer;
+	sprintf (outbuffer, "%03d", int(value));
+	return outbuffer;
+}
+
 /* Background, con la mappa offsets.map, in quicktime vr. */
 
 void background (unsigned start,
@@ -6184,12 +6193,12 @@ void surrounding (char compass_on, int openhudcount)
 	}
 
 	sprintf (outhudbuffer, "EPOC %d & ", epoc);
-	lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L;
-	strcat (outhudbuffer, alphavalue(lsecs)); strcat (outhudbuffer, ".");
+	lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L; lsecs%=1000;
+	strcat (outhudbuffer, formatTriad(lsecs)); strcat (outhudbuffer, ".");
 	lsecs = secs; lsecs %= 1000000L; lsecs -= lsecs % 1000; lsecs /= 1000;
-	strcat (outhudbuffer, alphavalue(lsecs)); strcat (outhudbuffer, ".");
+	strcat (outhudbuffer, formatTriad(lsecs)); strcat (outhudbuffer, ".");
 	lsecs = secs; lsecs %= 1000;
-	strcat (outhudbuffer, alphavalue(lsecs));
+	strcat (outhudbuffer, formatTriad(lsecs));
 	if (compass_on) {
 		strcat (outhudbuffer, " & SQC ");
 		strcat (outhudbuffer, alphavalue(landing_pt_lon));
