@@ -61,3 +61,6 @@ Release 2.2:
 FIX: Epoc 6012's triad sinister was calculated incorrectly and started with a '1'.
 CHANGE: Triad sinister/medius/dexter are now padded with zeros. This makes the transition from Epoc 6011 to Epoc 6012 look nicer.
 UPDATED starmap.
+
+Release 2.2b:
+FIX: Fixed bug that caused r2.2 to not run correctly under Windows due to a stupid programmer error. :>

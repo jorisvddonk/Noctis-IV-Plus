@@ -839,6 +839,7 @@ int  epoc = 6011;
 
 char          ctb[512];
 char	      dec[20];
+char 	triadFormat[10];
 
 char	      _delay	     = 12;
 char          stspeed        = 0;
@@ -2687,9 +2688,8 @@ char *alphavalue (double value)
 
 char *formatTriad (double value)
 {
-	char *outbuffer;
-	sprintf (outbuffer, "%03d", int(value));
-	return outbuffer;
+	sprintf (triadFormat, "%03d\0", int(value));
+	return triadFormat;
 }
 
 /* Background, con la mappa offsets.map, in quicktime vr. */
