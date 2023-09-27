@@ -7,3 +7,5 @@ modules/NOCTIS.EXE
 gallery/*
 movies/*
 source/BIN/*
+
+*.zip
