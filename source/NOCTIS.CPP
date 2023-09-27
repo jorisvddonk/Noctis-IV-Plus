@@ -1186,6 +1186,8 @@ extern int moviestime;
 extern int moviedeck;
 int moviepaused=0;
 
+char about = 0;
+
 unsigned char far * ctrlkeys     = (unsigned char far *) 0x00000417;
 
 char   aso_countdown = 100;	// contatore per la funzione "autoscreenoff"
@@ -3112,6 +3114,12 @@ void main ()
 			datasheetscroll = 0;
 			data = 0;
 		}
+
+		// about page
+		if (about) {
+			ShowAboutPage(0);
+		}
+
 		//
 		// Croce di puntamento planetaria.
 		//
@@ -3885,6 +3893,15 @@ void main ()
 			c = attendi_pressione_tasto();
 			if (!c) {
 				c = attendi_pressione_tasto();
+				if (c==0x3B) { // F1 - help & about
+					if (about == 0){
+						about = 1;
+						moviestat = 0;
+					}
+					else {
+						about = 0;
+					}
+				}
 				if (c==0x3D){								// f3 - moviestat
 					if (moviestat == 0){
 						moviestat = 1;
@@ -4350,4 +4367,35 @@ void main ()
 	_80_25_C ();
 
 	freeze ();
+}
+
+void ShowAboutPage(char surface) {
+	areaclear(adapted, 5, 5, 315, 195, 0, 0, 0);
+	areaclear(adapted, 11, 10, 310, 32, 0, 0, 80);
+	wrouthud (14, 12, NULL, "                               NOCTIS IV PLUS");
+	wrouthud (14, 19, NULL, "                      BY MEGA, NEUZD, SL, AND OTHERS");
+	wrouthud (14, 26, NULL, "     MODIFIED VERSION OF NOCTIS - A PROGRAM MADE BY ALESSANDRO GHIGNOLA.");
+	areaclear (adapted, 11, 35, 310, 44, 0, 0, 72);
+	areaclear (adapted, 11, 45, 310, 168, 0, 0, 112);
+	if (surface) {
+		wrouthud (14, 37, NULL, "SURFACE SHORTCUT KEYS:");
+		wrouthud (14,53, NULL,  "0-9 - MOVEMENT SPEED");
+		wrouthud (14,59, NULL,   "J - JUMP                                    L - LAND ON SURFACE");
+		wrouthud (14,65, NULL,   "SPACE - JETPACK                             C - DISENGAGE JETPACK CONTROL");
+		wrouthud (14,71, NULL,   "M OR ASTERISK - SNAPSHOT                    N OR / - WIDE SNAPSHOT");
+		wrouthud (14,77, NULL,   "B OR DELETE - RAW SNAPSHOT");
+		wrouthud (14,83, NULL,   "F3 - MOVIEMAKER");
+		wrouthud (14,89, NULL,  "UP ARROW - TOGGLE MOUSELOOK");
+	} else {
+		wrouthud (14, 37, NULL, "SHORTCUT KEYS (WHEN IN SPACE):");
+		wrouthud (14, 53, NULL, "M OR ASTERISK - SNAPSHOT                     B - RAW SNAPSHOT");
+		wrouthud (14, 59, NULL, "F3 - MOVIEMAKER");
+		wrouthud (14, 65, NULL, "TAB - TOGGLE ANTIALIASING");
+		wrouthud (14, 71, NULL, "S - TOGGLE ROOFSPEED");
+	}
+	areaclear (adapted, 11, 178, 310, 188, 0, 0, 72);
+	if (charge<0) {
+		wrouthud (14,160, NULL, "           THIS STARDRIFTER IS EQUIPPED WITH THE OMEGA DRIVE       ");
+	}
+	wrouthud (14,180, NULL, "RELEASE 2.3 ALPHA 2");
 }
