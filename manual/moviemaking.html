@@ -21,7 +21,7 @@ In any occasion, to access the Moviemaker, hit F3.<br>
 <br>
 
 <BR>
-<b>Mega's original manual:</b><BR>
+<h2>Mega's original manual:</h2><BR>
 The Moviemaker is a simple utility that really does nothing more than taking a snapshot at a constant rate. For example,
 the user can take a snapshot every 5 in-game frames. Since we do not know if Felysians suffer from epilepsy, you'll be
 able to disable the black flash that you'll see whenever you take a snapshot. To actually turn a recorded movie into a
@@ -29,6 +29,7 @@ able to disable the black flash that you'll see whenever you take a snapshot. To
 file, you'll need a utility that allows you to do that. <a href="https://ffmpeg.org/">ffmpeg</a> can do this for you,
 for free!<br>
 <br>
+<h3>Using the moviemaker</h3>
 Now, you'll probably be wondering what the Moviemaker actually looks like, eh? Well, here it is:<br>
 <center><img src=./files/moviemaker.png></center><br>
 <br>
@@ -118,21 +119,20 @@ Enjoy. neuzd
 <br>
 <br>
 
+<h3>Converting a set of BMP files into a video file</h3>
+
 So, now you know how to record a movie using the Moviemaker, but you still don't know how to actually turn a movie into
-an .avi.. Therefore, what follows is a simple step-to-step guide on how to do that using the excellent ImageToAvi
+a video file.. Therefore, what follows is a simple step-to-step guide on how to do that using the excellent <a
+  href="https://ffmpeg.org/">ffmpeg</a>
 tool.<br>
-1) hit Add Image Files.<br>
-2) navigate to your noctis\movies\MOVIEDECKNUMBER folder, where MOVIEDECKNUMBER is -ofcourse- the number of the
-moviedeck you want to record, such as "001"..<br>
-3) Select all files (ctrl A) and hit OK.<br>
-4) Hit OK again for the "# files added to list".<br>
-5) set Width to 320, set Height to 200, set Border Size Width to 0, and set Border Size Height to 0, too...<br>
-6) change Frames Per Second to the Frames Per Second you want your movie to have (preferably the same FPS rate as you
-have seen while recording the movie).<br>
-7) Hit Output File and change the location, if you so prefer.<br>
-8) Hit Compile Images, pick a codec and configure it (I'd pick Xvid or Microsoft Video 1), and sit back and relax.<br>
-9) Compress the resulting .avi file (Microsoft Video usually compresses to about 50% of it's original size!), and put it
-online somewhere! :)<br>
+1. Open a (terminal) command prompt<br>
+2. Navigate to (nivplus folder)/movies/(movie deck number), for example, `cd ~/nivplus/movies/001`<br>
+3. Run the following command:<br>
+<pre>
+  ffmpeg -framerate 10 -i "%8d.BMP" -c:v libx265 -r 10 -an -crf 17 output.mp4
+</pre><br>
+You can lower the 'crf' argument to get better quality, at the expense of file size.
+<br><br>
 <br>
 Note that the compression rate depends on the movie. A lot of detail (read: Felysian grass, for example) means larger
 filesize, OR worse quality.<br>
