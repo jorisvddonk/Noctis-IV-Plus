@@ -5,3 +5,4 @@ extern void CalculatemovieFPS(int moviefscap, int moviestime);
 extern void ShowMovieSetup(int moviefsec, char movieflash, int moviedeck);
 extern void wrouthud (unsigned x, unsigned y, unsigned l, char *text);
 extern void FitOutHudBuffer(int min, int max);
+extern void ShowAboutPage(char surface);
