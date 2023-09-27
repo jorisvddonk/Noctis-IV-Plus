@@ -161,6 +161,7 @@ extern char   surlight;
 extern Word old_currentbin_length;
 extern Dword   lastSnapshot;
 extern char   option_mouseLook;
+extern char   option_antialias_in_stardrifter;
 
 extern char   land_now;
 extern char   landing_point;

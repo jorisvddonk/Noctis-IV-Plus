@@ -1,11 +1,11 @@
 Noctis IV+ Release 2
 Noctis IV CE features backported into vanilla Noctis IV
 -------------------------------------------------------------------------
-Noctis IV+ has been primarily worked on by Megagun and Neuzd, but it uses
+Noctis IV+ has been primarily worked on by Mega and Neuzd, but it uses
 code made for and by the Noctis IV CE project. 
 -------------------------------------------------------------------------
 NOCTIS IV CE CONTRIBUTORS (some of these might not have things in NOCTIS IV+, though):
-Besides Megagun and Shadowlord (and of course Alex!), the following people have contributed code or other tools/files:
+Besides Mega and SL (and of course Alex!), the following people have contributed code or other tools/files:
 Bensel	(Hopper highlighting code)
 The Reflection	(Exponential atmospheric pressure)
 Ees33 (New surface algorithm and surface fixes, which are currently disabled but in the source still)
@@ -64,3 +64,6 @@ UPDATED starmap.
 
 Release 2.2b:
 FIX: Fixed bug that caused r2.2 to not run correctly under Windows due to a stupid programmer error. :>
+
+upcoming release:
+ADD: 'Tab' key in the Stardrifter now toggles 'anti aliasing' on and off.
