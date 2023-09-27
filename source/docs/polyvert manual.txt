@@ -32,8 +32,6 @@ Deleting a polygon... well.. not too hard, really.. All you need to know, is tha
 
 Oh, nearly forgot to mention, that backspace also deletes the latest vertex you were about to place (you know, the flashy yellow thingies).. 
 
-Uuuuhm.. That was all I needed to teach you, I think. If you need help, feel free to ask me (That's "Megagun", yep) or feel free to experiment until you manged to fix it.. :)
-
 What follows, is a keylist. Might come in handy... Feel free to experiment with these keys, too, since I haven't explained them all yet.. Have fun!
 
 Oh, and please remember this: SAVE OFTEN, MAKE BACKUPS!

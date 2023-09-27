@@ -2,7 +2,7 @@
 
 	Noctis.
 	-------
-	Primo programma pió serioso del solito, che rovina la sana (ehm...)
+	Primo programma piÔøΩ serioso del solito, che rovina la sana (ehm...)
 	manifestazione informatica delle mie follie, pur senza tradirla
 	del tutto. Oh yes.
 
@@ -10,17 +10,17 @@
 	----------------------------
 	Spazio: ultima frontiera.
 	Questi sono i viaggi delle zattere cosmiche del popolo felino.
-	La loro missione (missione?) ä quella di esplorare strani, nuovi
+	La loro missione (missione?) ÔøΩ quella di esplorare strani, nuovi
 	mondi, alla ricerca di un territorio da conquistare, eliminando
-	eventuali nuove forme di vita o nuove civiltÖ, per arrivare lÖ
-	dove nessun gatto ä mai giunto prima.
+	eventuali nuove forme di vita o nuove civiltÔøΩ, per arrivare lÔøΩ
+	dove nessun gatto ÔøΩ mai giunto prima.
 
 	Storia.
 	-------
-	Complicata. Il programma ä complicato: forse un po' troppo,
-	comunque pió del solito. Se non troverï un modo di farlo
+	Complicata. Il programma ÔøΩ complicato: forse un po' troppo,
+	comunque piÔøΩ del solito. Se non troverÔøΩ un modo di farlo
 	digerire al compilatore (siamo a 6900 righe solo con
-	il sorgente principale), dovrï modulizzarlo (mai fatto prima,
+	il sorgente principale), dovrÔøΩ modulizzarlo (mai fatto prima,
 	molto laborioso e molto antipatico) oppure trovarmi un altro
 	compilatore. Sono attivi: astrozattere, stelle e pianeti,
 	gestore di bordo, riflessi dell'utente, superfici dei
@@ -29,12 +29,12 @@
 	il controllo degli eventi: in lavorazione il
 	proiettore fationico. -> 27.1.97
 	-------
-	Il programma ä stato spezzato in due moduli. -> 28.1.97
+	Il programma ÔøΩ stato spezzato in due moduli. -> 28.1.97
 
 	Modulo delle funzioni di base di Noctis.
 	----------------------------------------
-	Il progetto ä costituito da NOCTIS-0.CPP, NOCTIS.CPP,
-	pió un file includente definizioni comuni ai due moduli.
+	Il progetto ÔøΩ costituito da NOCTIS-0.CPP, NOCTIS.CPP,
+	piÔøΩ un file includente definizioni comuni ai due moduli.
 
 */
 
@@ -60,7 +60,7 @@ char		surface_palette[768];
 int lstri (char *stri)
 {
 	// misura una stringa e la copia su tmppal.
-	// ä una funzione di supporto per "reach_your_dir"
+	// ÔøΩ una funzione di supporto per "reach_your_dir"
 
 	int c;
 
@@ -79,7 +79,7 @@ int lstri (char *stri)
 void reach_your_dir ()
 {
 	// Si posiziona nella vera directory in cui attualmente si trova
-	// il programma, al di lÖ di quale sia quella di lavoro corrente.
+	// il programma, al di lÔøΩ di quale sia quella di lavoro corrente.
 
 	int c;
 	char d;
@@ -131,7 +131,7 @@ void _80_25_C () // modo grafico 80x25 testo a colori.
 	}
 }
 
-int attendi_pressione_tasto () // aspetta un tasto e dç qual'ä.
+int attendi_pressione_tasto () // aspetta un tasto e dÔøΩ qual'ÔøΩ.
 {
 	unsigned char ritorno;
 
@@ -146,7 +146,7 @@ int attendi_pressione_tasto () // aspetta un tasto e dç qual'ä.
 	return (ritorno);
 }
 
-int tasto_premuto () // torna 1 se c'ä un tasto premuto da estrarre.
+int tasto_premuto () // torna 1 se c'ÔøΩ un tasto premuto da estrarre.
 {
 	asm {
 		push ax
@@ -463,16 +463,16 @@ ac_endl:  asm { pop di
 	Occhio al trucco: normalmente ci sarebbero 16 addizioni e una
 	divisione (per 16) da fare, per ogni punto.
 	Col trucco, invece, bastano quattro addizioni a 32 bit,
-	altre quattro a 8 bit, pió un paio di shifts ed un and logico su edx.
+	altre quattro a 8 bit, piÔøΩ un paio di shifts ed un and logico su edx.
 
 	Normale: 16 + 42 = 58 cicli.
 	Truccato: 8 + 4 = 12 cicli.
 
 	Piuttosto ovvio: la tavola dei colori dev'essere una sfumatura unica
 	e compatta, da far rientrare nei primi 64 registri del video DAC;
-	il colore zero ä il pió tenue, il 63 quello pió brillante.
+	il colore zero ÔøΩ il piÔøΩ tenue, il 63 quello piÔøΩ brillante.
 
-	Nota: la procedura puï essere reiterata per ottenere
+	Nota: la procedura puÔøΩ essere reiterata per ottenere
 	      una maggiore attenuazione.
 
 */
@@ -537,7 +537,7 @@ store:	asm {	mov	[di], al
 		popa }
 }
 
-/* Versione a colori: 4 sfumature di 64 intensitÖ ciascuna. */
+/* Versione a colori: 4 sfumature di 64 intensitÔøΩ ciascuna. */
 
 /*void psmooth_64 (unsigned char far *target, unsigned segshift)
 {
@@ -733,7 +733,7 @@ int 	sfh; // handle del file della situazione di superficie.
 
 /*
 
-	Dati globali di continuitÖ (salvati e ripristinati).
+	Dati globali di continuitÔøΩ (salvati e ripristinati).
 
 */
 
@@ -810,6 +810,7 @@ Word old_currentbin_length = 245;
 //Additional variables: (SL and Mega)
 Dword lastSnapshot = -1;				//0
 char option_mouseLook = 0;			//4
+char option_antialias_in_stardrifter = 1;
 
 Word new_currentbin_length = 5;
 char 	fcs_status_extended[42] = "STANDBY";
@@ -882,7 +883,7 @@ extern char movie;
 */
 
 /* Alcuni ordinali (da 0 a 20) per determinate rappresentazioni.
-   Il corrispondente "zeresimo" ä infrequente ma si puï usare: ä corretto. */
+   Il corrispondente "zeresimo" ÔøΩ infrequente ma si puÔøΩ usare: ÔøΩ corretto. */
 
 char *ord[21] = { "zeroth", "first", "second", "third", "fourth", "fifth",
 		  "sixth", "seventh", "eight", "nineth", "tenth", "eleventh",
@@ -1018,13 +1019,13 @@ char gnd_red_filter = 63; // Filtri per il suolo.
 char gnd_grn_filter = 63;
 char gnd_blu_filter = 63;
 
-float planet_grav  = 150; // corrisponde alla gravitÖ terrestre.
+float planet_grav  = 150; // corrisponde alla gravitÔøΩ terrestre.
 float rainy         = 0; // 0..5 a seconda dell'albedo delle nubi.
 int   albedo        = 0; // Albedo media della superficie di sbarco:
-			 // puï andare da 0 a 62.
+			 // puÔøΩ andare da 0 a 62.
 
-unsigned char sky_brightness = 32; // LuminositÖ del cielo (0-48).
-unsigned char horiz_brt      = 20; // LuminositÖ minima dell'orizzonte (0-48).
+unsigned char sky_brightness = 32; // LuminositÔøΩ del cielo (0-48).
+unsigned char horiz_brt      = 20; // LuminositÔøΩ minima dell'orizzonte (0-48).
 
 unsigned m200[200]; // numeri da 0 a 199, moltiplicati per 200 (ottimizzaz.)
 
@@ -1051,7 +1052,7 @@ double qid = 1.0 / 16384; // Costante per trovare l'id x/z di un quadrante.
 
 unsigned long pvfile_datatop = 0; // cima dei dati.
 
-// nota: dataptr ä un puntatore relativo che puï andare da zero a "pvbytes".
+// nota: dataptr ÔøΩ un puntatore relativo che puÔøΩ andare da zero a "pvbytes".
 unsigned pvfile_dataptr[handles] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 unsigned pvfile_datalen[handles] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 unsigned pvfile_npolygs[handles] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -1060,7 +1061,7 @@ char  far *pv_n_vtx[handles]; // numero vertici per ogni poligono (3 o 4).
 float far *pvfile_x[handles]; // coord. X (quattro vertici) di ogni poligono.
 float far *pvfile_y[handles]; // coord. Y (quattro vertici) di ogni poligono.
 float far *pvfile_z[handles]; // coord. Z (quattro vertici) di ogni poligono.
-char  far *pvfile_c[handles]; // intensitÖ del colore di ogni poligono (0..63).
+char  far *pvfile_c[handles]; // intensitÔøΩ del colore di ogni poligono (0..63).
 float far *pv_mid_x[handles]; // coordinate X dei punti medi di ogni poligono.
 float far *pv_mid_y[handles]; // coordinate Y dei punti medi di ogni poligono.
 float far *pv_mid_z[handles]; // coordinate Z dei punti medi di ogni poligono.
@@ -1199,7 +1200,7 @@ void shade (unsigned char far *palette_buffer,
 	}
 }
 
-/* Copia aree video pió grandi di 4 per 1 pixels. */
+/* Copia aree video piÔøΩ grandi di 4 per 1 pixels. */
 
 void copia (unsigned char far *dest, unsigned char far *sorg, unsigned x, unsigned y, int l, int a)
 {
@@ -1286,7 +1287,7 @@ void from_user ()
 }
 
 /* Orienta la videocamera virtuale verso un certo punto dato da see_x;y;z,
-   frattalizzando l'angolo giro per fare pió in fretta. */
+   frattalizzando l'angolo giro per fare piÔøΩ in fretta. */
 
 void watch (double cam_x, double cam_y, double cam_z,
 	    double see_x, double see_y, double see_z)
@@ -1393,7 +1394,7 @@ void p_Forward (float delta)
 
 /* Calcola la posizione di un certo pianeta in orbita attorno ad una certa
    stella (quella vicina), sulla base dei parametri orbitali (inclinazione,
-   eccentricitÖ, raggio ed orientamento dell'asse maggiore) e ritorna i
+   eccentricitÔøΩ, raggio ed orientamento dell'asse maggiore) e ritorna i
    valori in plx, ply, plz. */
 
 double mox, moy, moz;
@@ -1466,7 +1467,7 @@ void planet_xyz (int n)
 /* Calcola il periodo di rivoluzione di un corpo, in secondi:
    per i pianeti, attorno alla stella;
    per le lune, attorno al pianeta...
-   0.01e-7 ä l'equivalente, nel cosmo virtuale di Noctis,
+   0.01e-7 ÔøΩ l'equivalente, nel cosmo virtuale di Noctis,
    della costante gravitazionale. */
 
 float rtp (int n)
@@ -1487,8 +1488,8 @@ float rtp (int n)
 }
 
 /* Calcola la longitudine d'incidenza dello sguardo sulla superficie
-   di un certo pianeta dato da (plx, ply, plz). L'osservatore ä posto
-   nel punto (obs_x; obs_z) dato che la sua Y ä ininfluente... */
+   di un certo pianeta dato da (plx, ply, plz). L'osservatore ÔøΩ posto
+   nel punto (obs_x; obs_z) dato che la sua Y ÔøΩ ininfluente... */
 
 int planet_viewpoint (double obs_x, double obs_z)
 {
@@ -1682,7 +1683,7 @@ trace:	asm mov es, seg_adapted;
 			db 0x66; mov dx, word ptr b    // passa in edx il delta_y (ovvero b).
 
 			db 0x66; shl ax, 1	       // moltiplica i delta per 2:
-			db 0x66; shl dx, 1	       // un punto sç, uno no.
+			db 0x66; shl dx, 1	       // un punto sÔøΩ, uno no.
 
 			push bp			       // salva bp sullo stack
 			db 0x66; mov bp, word ptr xa } // passa in ebp il limite superiore del ciclo (come coordinata x d'arrivo).
@@ -1733,7 +1734,7 @@ trace:	asm mov es, seg_adapted;
 
 		break;
 
-		case 3: // come tipo 0, ma pió larghi.
+		case 3: // come tipo 0, ma piÔøΩ larghi.
 
 		asm {	db 0x66; mov ax, word ptr a    // passa in eax il delta_x (ovvero a).
 			db 0x66; mov dx, word ptr b    // passa in edx il delta_y (ovvero b).
@@ -1906,8 +1907,8 @@ void stick3d (float p_x, float p_y, float p_z,
 	if (fpx>stk_ubx&&lx>stk_ubx) return;
 
 	/* Ottimizza il tracciamento del segmento, tagliando via le parti
-	   che di sicuro non si vedono. Questa parte non ä efficace se
-	   i punti di partenza e di arrivo fanno sç che il segmento non
+	   che di sicuro non si vedono. Questa parte non ÔøΩ efficace se
+	   i punti di partenza e di arrivo fanno sÔøΩ che il segmento non
 	   intersechi alcun lato dell'area visibile: ma in questo peculiare
 	   caso le linee vengono escluse dai controlli precedenti. */
 
@@ -1981,12 +1982,12 @@ void stick3d (float p_x, float p_y, float p_z,
 	Stick (fpx+x_centro, fpy+y_centro, lx+x_centro, ly+y_centro);
 }
 
-/* Se uno "stick" ä un "bastoncino" tridimensionale delimitato da due
-   estremitÖ, un "link" ä un "ponte" tra il punto iniziale dell'ultimo stick
+/* Se uno "stick" ÔøΩ un "bastoncino" tridimensionale delimitato da due
+   estremitÔøΩ, un "link" ÔøΩ un "ponte" tra il punto iniziale dell'ultimo stick
    tracciato ed il punto passato a questa funzione.
    Sembrerebbe un sistema efficace per velocizzare le proiezioni 3d, ma
-   in realtÖ non si puï applicare sempre: a parte il fatto che uno dei punti
-   ä sempre lo stesso, quando questo non ä risultato visibile in precedenza
+   in realtÔøΩ non si puÔøΩ applicare sempre: a parte il fatto che uno dei punti
+   ÔøΩ sempre lo stesso, quando questo non ÔøΩ risultato visibile in precedenza
    neanche i link saranno visibili.
    Attualmente, Noctis usa "link3d" per mostrare i singoli fili d'erba
    sulla superficie di pianeti abitabili. */
@@ -2083,8 +2084,8 @@ void fline (long fx, long fy,
 	float kk, diff;
 
 	/* Ottimizza il tracciamento del "Segmento", tagliando via le parti
-	   che di sicuro non si vedono. Questa parte non ä efficace se
-	   i punti di partenza e di arrivo fanno sç che il segmento non
+	   che di sicuro non si vedono. Questa parte non ÔøΩ efficace se
+	   i punti di partenza e di arrivo fanno sÔøΩ che il segmento non
 	   intersechi alcun lato dell'area visibile: ma in questo peculiare
 	   caso le linee vengono escluse dai controlli successivi. */
 
@@ -2221,7 +2222,7 @@ void randomic_mapper (float x0,
 }
 
 /* Libera un handle in cui era stato caricato un file di grafica poligonale:
-   se l'handle ä giÖ libero, non succede nulla. */
+   se l'handle ÔøΩ giÔøΩ libero, non succede nulla. */
 
 void unloadpv (int handle)
 {
@@ -2234,9 +2235,9 @@ void unloadpv (int handle)
 	// aggiorna i puntatori di tutti gli handle
 	// che sono memorizzati oltre quello specificato.
 	// il type cast serve per convincere le cacchio di specifiche ANSI
-	// che il puntatore ä spostato byte per byte, e non come penserebbe
+	// che il puntatore ÔøΩ spostato byte per byte, e non come penserebbe
 	// a seconda del tipo di dati a cui punta. se trovo quello che ha
-	// definito l'ANSI cosç lo faccio nero.
+	// definito l'ANSI cosÔøΩ lo faccio nero.
 	for (h = 0; h < handles; h++)
 		if (pvfile_dataptr[h] > pvfile_dataptr[handle]) {
 			(char far*)pv_n_vtx[h] -= pvfile_datalen[handle];
@@ -2255,7 +2256,7 @@ void unloadpv (int handle)
 		}
 
 	// sposta indietro i dati per liberare memoria nell'area poligonale.
-	// (se ä necessario...)
+	// (se ÔøΩ necessario...)
 	eod = pvfile_dataptr[handle] + pvfile_datalen[handle];
 	if (eod < pvfile_datatop)
 		_fmemmove (pv_n_vtx[handle],
@@ -2293,12 +2294,12 @@ void unloadallpv ()
 	depth_sort: flag che specifica se allocare spazio per il calcolo
 		    dei punti medi dei vertici di ogni poligono ed effettuare
 		    il depth-sorting quando si deve tracciare l'oggetto.
-      * Ritorno: -1 se non ä possibile accedere al file;
-		  0 se l'handle non ä assegnabile (non esiste),
-		    oppure se non c'ä abbastanza memoria nel buffer
+      * Ritorno: -1 se non ÔøΩ possibile accedere al file;
+		  0 se l'handle non ÔøΩ assegnabile (non esiste),
+		    oppure se non c'ÔøΩ abbastanza memoria nel buffer
 		    della grafica poligonale ("pvfile") per caricare
 		    e/o gestire tutti i poligoni che compongono l'oggetto;
-		 +1 se tutto ä andato bene. */
+		 +1 se tutto ÔøΩ andato bene. */
 
 char loadpv (int   handle, long virtual_file_position,
 	     float xscale, float yscale, float zscale,
@@ -2307,12 +2308,12 @@ char loadpv (int   handle, long virtual_file_position,
 {
 	int fh, c, p;
 
-	// verifica disponibilitÖ del file e dell'handle.
+	// verifica disponibilitÔøΩ del file e dell'handle.
 	if (handle >= handles) return (0);
 	fh = sa_open (virtual_file_position);
 	if (fh == -1) return (-1);
 
-	// verifica se l'handle ä giÖ occupato. se lo ä, lo libera.
+	// verifica se l'handle ÔøΩ giÔøΩ occupato. se lo ÔøΩ, lo libera.
 	if (pvfile_datalen[handle]) unloadpv (handle);
 
 	// aggiornamento handle interno.
@@ -2336,10 +2337,10 @@ char loadpv (int   handle, long virtual_file_position,
 
 	// azzera il primo puntatore dei dati per il depth sort
 	// (sta a significare, se non viene successivamente modificato,
-	// che non ä richiesto il depth sorting per l'oggetto in questione).
+	// che non ÔøΩ richiesto il depth sorting per l'oggetto in questione).
 	pv_mid_x[handle] = 0;
 
-	// verifica disponibilitÖ memoria prima di leggere i dati.
+	// verifica disponibilitÔøΩ memoria prima di leggere i dati.
 	if (pvfile_datatop > pv_bytes) {
 		pvfile_datatop = pvfile_dataptr[handle];
 		_close (fh);
@@ -2350,7 +2351,7 @@ char loadpv (int   handle, long virtual_file_position,
 	_read (fh, pvfile + pvfile_dataptr[handle],
 	       pvfile_datatop - pvfile_dataptr[handle]);
 
-	// dopodichÇ si puï anche richiudere il file...
+	// dopodichÔøΩ si puÔøΩ anche richiudere il file...
 	_close (fh);
 
 	// azzeramento dati sui vertici non usati (per i triangoli)
@@ -2373,7 +2374,7 @@ char loadpv (int   handle, long virtual_file_position,
 		pvfile_datatop  += 4 * pvfile_npolygs[handle];
 		pv_dep_i[handle] = (int far *)   (pvfile + pvfile_datatop);
 		pvfile_datatop  += 2 * pvfile_npolygs[handle];
-		// verifica disponibilitÖ memoria per i dati appena aggiunti.
+		// verifica disponibilitÔøΩ memoria per i dati appena aggiunti.
 		if (pvfile_datatop > pv_bytes) {
 			pvfile_datatop = pvfile_dataptr[handle];
 			return (0);
@@ -2447,15 +2448,15 @@ void QuickSort (int far *index, float far *mdist, int start, int end)
 }
 
 /* Traccia una figura poligonale.
-   handle: l'handle (da 0 a 15) che si ä attribuito al file con "loadpv";
-   mode: puï essere -- 0 = tracciamento poligoni in tinta unita;
+   handle: l'handle (da 0 a 15) che si ÔøΩ attribuito al file con "loadpv";
+   mode: puÔøΩ essere -- 0 = tracciamento poligoni in tinta unita;
 		       1 = tracciamento con texture mapping;
 		       2 = rimappatura randomica ricorsiva dei poligoni.
    rm_iterations: viene usato solo se mode = 2, indica quante suddivisioni
 		  devono essere effettuate per ogni poligono rimappato;
    center_x/y/z: coordinate ove piazzare il centro dell'oggetto;
    use_depth_sort: flag per attivare il depth sort, che viene tuttavia
-		   effettivamente attivato solo se ä stato incluso come
+		   effettivamente attivato solo se ÔøΩ stato incluso come
 		   opzione nella chiamata a "loadpv" per quell'handle. */
 
 void drawpv (int handle, int mode, int rm_iterations,
@@ -2568,7 +2569,7 @@ void drawpv (int handle, int mode, int rm_iterations,
 	cam_z += center_z;
 }
 
-/* Replica una forma poligonale, copiandola da un'handle giÖ definito
+/* Replica una forma poligonale, copiandola da un'handle giÔøΩ definito
    a uno di uguali dimensioni. In caso d'errore, non succede nulla. */
 
 void copypv (int dest_handle, int src_handle)
@@ -2582,12 +2583,12 @@ void copypv (int dest_handle, int src_handle)
 
 /* Ruota una forma poligonale rispetto a uno dei suoi vertici,
    che viene assunto come centro di rotazione, applicando anche
-   un fattore di scalatura (che puï essere 1 se non ä necessario
+   un fattore di scalatura (che puÔøΩ essere 1 se non ÔøΩ necessario
    cambiare le dimensioni, come possono essere 0 gli angoli se
    si stanno cambiando le dimensioni senza ruotare).
-   "vertexs_to_affect" ä un puntatore a una serie di strutture "pvlist",
+   "vertexs_to_affect" ÔøΩ un puntatore a una serie di strutture "pvlist",
    nelle quali sono elencati i vertici che verranno effettivamente modificati:
-   se il puntatore "vertexs_to_affect" ä nullo, tutti i vertici lo sono.
+   se il puntatore "vertexs_to_affect" ÔøΩ nullo, tutti i vertici lo sono.
    Gli angoli sono espressi in gradi. */
 
 void modpv (int handle, int polygon_id, int vertex_id,
@@ -2753,7 +2754,7 @@ fine:	asm {	pop ds
 
 /* Cielo stellato, tre-di vero. A campo amplificato, annovera 2744 stelle,
    con magnitudine da 0 a +13 (ho pensato che un gatto, con vista scotopica,
-   e nello spazio, ne possa vedere parecchie di pió del normale...). */
+   e nello spazio, ne possa vedere parecchie di piÔøΩ del normale...). */
 
 void sky (unsigned limits)
 {
@@ -2777,14 +2778,14 @@ void sky (unsigned limits)
 
 	/* 	Il seguente frammento controlla la rarefazione delle stelle
 		all'aumentare della distanza dal centro galattico. La scala
-		sull'asse Y ä amplificata di 30 volte per matenere credibili
+		sull'asse Y ÔøΩ amplificata di 30 volte per matenere credibili
 		le proporzioni della galassia che, pur essendo piuttosto
 		ellittica (o grassottella), ha la forma di un disco
 		schiacciato. Le stelle si rarefanno a seconda del valore
-		di "distance_from_home". Questa ä una tabella che fornisce
+		di "distance_from_home". Questa ÔøΩ una tabella che fornisce
 		il numero di stelle eliminate (ogni settore contiene una
 		stella, e il numero di settori visibili a campo amplificato
-		ä di 14*14*14 = 2744) man mano che distance_from_home
+		ÔøΩ di 14*14*14 = 2744) man mano che distance_from_home
 		aumenta il suo valore:
 
 		0-400.000.000			0 stelle eliminate
@@ -2792,7 +2793,7 @@ void sky (unsigned limits)
 		1.200.000.000-1.600.000.000	3 su 4 stelle eliminate
 		1.600.000.000-2.000.000.000	7 su 8 stelle eliminate
 
-		Oltre 2 miliardi di unitÖ, non ä pió permesso selezionare
+		Oltre 2 miliardi di unitÔøΩ, non ÔøΩ piÔøΩ permesso selezionare
 		stelle: il rapporto di rarefazione sarebbe comunque di
 		1 stella effettiva ogni 16 settori. */
 
@@ -2980,16 +2981,16 @@ m_end:	  asm {	db 0x66; sub word ptr sect_y, dx
 e_end:	  // No more...
 }
 
-/* Ancora quicktime-vr, purtroppo ä necessaria: una sfera che poi puï essere
-   un pianeta o una stella (non ä il caso di andare per il sottile).
-   Usa un'enormitÖ di registri: salti mortali con le macro in codice macchina
-   perchÇ il c++ non mi considera i registri estesi. Meglio ricapitolare:
-   DS passa su GS, ES ä la pagina video (solitamente nascosta, non ä
+/* Ancora quicktime-vr, purtroppo ÔøΩ necessaria: una sfera che poi puÔøΩ essere
+   un pianeta o una stella (non ÔøΩ il caso di andare per il sottile).
+   Usa un'enormitÔøΩ di registri: salti mortali con le macro in codice macchina
+   perchÔøΩ il c++ non mi considera i registri estesi. Meglio ricapitolare:
+   DS passa su GS, ES ÔøΩ la pagina video (solitamente nascosta, non ÔøΩ
    l'area dell'adattatore) specificata in target, FS ospita la tapestry,
    la tappezzeria da mappare sul globo, e il vecchio DS punta all'area
    della mappa degli offsets, compressa con il sistema di MAPS.EXE nella
-   sua sezione X-Y. In effetti non sono offsets video giÖ pronti, perchÇ
-   vanno calcolati (primo byte = Y, secondo byte = X). Quando la Y ä 100
+   sua sezione X-Y. In effetti non sono offsets video giÔøΩ pronti, perchÔøΩ
+   vanno calcolati (primo byte = Y, secondo byte = X). Quando la Y ÔøΩ 100
    significa che l'offset originario era 64000 e che quindi non si tratta
    di un punto, ma di una serie di avanzamenti consecutivi lungo il
    segmento della tappezzeria, indicati per la precisione dal byte X. */
@@ -2998,7 +2999,7 @@ unsigned char glass_bubble = 1; // Se settato, disegna una specie di bolla
 				// trasparente attorno ai globi tracciati con
 				// la funzione "globe". Serve per simulare la
 				// presenza dell'atmosfera, ma solo per i
-				// pianeti che hanno CONSIDEREVOLI quantitÖ
+				// pianeti che hanno CONSIDEREVOLI quantitÔøΩ
 				// di gas attorno.
 
 /* Cacchio, dei veri e propri fill managers, e funzionano!
@@ -3293,7 +3294,7 @@ fine:	asm {	pop ds
 /* Modificata per fare globi bianchi.
    Viene usata per le stelle viste da lontano, e per la corona stellare.
    Non ha bisogno della mappa dei globi. Color compreso fra 0 e 0x3F,
-   perchÇ per maggior velocitÖ funziona sulla prima sfumatura. */
+   perchÔøΩ per maggior velocitÔøΩ funziona sulla prima sfumatura. */
 
 void whiteglobe (unsigned char far *target,
 		 double x, double y, double z,
@@ -3525,9 +3526,9 @@ void FitOutHudBuffer(int min, int max) {
 	}
 }
 /* Come sopra, ma mentre quella di sopra traccia in 4x4 pixels,
-   dimezzando la risoluzione per essere pió veloce nel tracciamento
+   dimezzando la risoluzione per essere piÔøΩ veloce nel tracciamento
    di globi che possono coprire tutto lo schermo, questa traccia in 1x1,
-   ä pió precisa ma applicabile solo alla visualizzazione delle stelle
+   ÔøΩ piÔøΩ precisa ma applicabile solo alla visualizzazione delle stelle
    viste dai pianeti. */
 
 double xsun_onscreen;
@@ -3611,7 +3612,7 @@ void whitesun (unsigned char far *target,
 	}
 }
 
-/* Bagliori attorno alle luci pió intense. */
+/* Bagliori attorno alle luci piÔøΩ intense. */
 
 /*float far *lft_sin = (float far *) farmalloc (361*4);
 float far *lft_cos = (float far *) farmalloc (361*4);*/
@@ -3705,8 +3706,8 @@ void lens_flares_for (double cam_x, double cam_y, double cam_z,
 
 /* Puntini lontani, per esempio pianeti e lune.
    Le due funzioni si integrano: viene disegnato un puntino se la distanza
-   ä grande. Man mano che ci si avvicina, il puntino diventa un dischetto,
-   del diametro massimo di 5 pixels. Ovviamente, per fare dischi pió grandi,
+   ÔøΩ grande. Man mano che ci si avvicina, il puntino diventa un dischetto,
+   del diametro massimo di 5 pixels. Ovviamente, per fare dischi piÔøΩ grandi,
    bisogna passare il controllo a un'altra funzione (sul tipo di globe). */
 
 const double  pix_dst_scale = 0.384;
@@ -3934,7 +3935,7 @@ void getsecs ()
 	for (m=1; m<atoi(month); m++)
 		secs += dfm[m];			      // giorni per mese
 
-	if (atoi(month)>2 && !(atol(year)%4)) secs++; // se l'anno ä bisestile
+	if (atoi(month)>2 && !(atol(year)%4)) secs++; // se l'anno ÔøΩ bisestile
 
 	secs += atoi(day) - 1;			      // + giorni mese attuale
 	secs *= 86400;                                // secondi in un giorno
@@ -3961,7 +3962,7 @@ void getsecs ()
 }
 
 /* Estrae dalla tabella pseudo, da 74000 miliardi di elementi diversi, le
-   informazioni sulla stella che si ä scelta. */
+   informazioni sulla stella che si ÔøΩ scelta. */
 
 void extract_ap_target_infos ()
 {
@@ -3985,13 +3986,13 @@ void extract_ap_target_infos ()
 float zrandom (int range) { return (random(range) - random(range)); }
 
 /* Parte della gestione della cartografia.
-   E' stata spostata qui perchÇ possa essere chiamata da "prepare_nearstar".
+   E' stata spostata qui perchÔøΩ possa essere chiamata da "prepare_nearstar".
    -------------------------------------------------------------------------
    Cerca un codice d'identificazione (per un pianeta o per una stella)
    nel file di cartografia stellare, e riporta la posizione del record.
-   Se il risultato ä -1, il codice non esiste, ovvero non c'ä un nome
+   Se il risultato ÔøΩ -1, il codice non esiste, ovvero non c'ÔøΩ un nome
    per la stella o per il pianeta che corrisponde a quel codice.
-   Type puï essere: P = Pianeta, S = Stella.
+   Type puÔøΩ essere: P = Pianeta, S = Stella.
    * usa come buffer di lettura "p_surfacemap". */
 
 int	smh;
@@ -4039,7 +4040,7 @@ long search_id_code (double id_code, char type)
 }
 
 /* Prepara le informazioni sulla stella vicina, quella attorno alla quale
-   ci si troverÖ: tra l'altro, prepara i pianeti estraendoli dalla
+   ci si troverÔøΩ: tra l'altro, prepara i pianeti estraendoli dalla
    tabella pseudo. */
 
 int starnop (double star_x, double star_y, double star_z)
@@ -4079,7 +4080,7 @@ void prepare_nearstar ()
 
 	nearstar_nop = random (class_planets[nearstar_class] + 1);
 
-	/* Prima estrazione (pressochÇ casuale, non realistica). */
+	/* Prima estrazione (pressochÔøΩ casuale, non realistica). */
 
 	for (n=0; n<nearstar_nop; n++) {
 		nearstar_p_owner[n]	 = -1;
@@ -4104,7 +4105,7 @@ void prepare_nearstar ()
 			nearstar_p_orb_seed[n] *= 10;
 	}
 
-	/* Aumento delle probabilitÖ di pianeti abitabili su classe zero. */
+	/* Aumento delle probabilitÔøΩ di pianeti abitabili su classe zero. */
 
 	if (!nearstar_class) {
 		if (random(4)==2) nearstar_p_type[2] = 3;
@@ -4200,10 +4201,10 @@ void prepare_nearstar ()
 			// Estrazione tipologia di satellite:
 			r = nearstar_p_type[q];
 			// Un oggetto substellare come luna?
-			// Ce lo puï avere solo una stella compagna.
+			// Ce lo puÔøΩ avere solo una stella compagna.
 			if (r==9 && s != 10) r = 2;
 			// Un gigante gassoso come luna?
-			// Ce lo puï avere solo un oggetto substellare,
+			// Ce lo puÔøΩ avere solo un oggetto substellare,
 			// o una stella compagna in un sistema multiplo.
 			if (r==6 && s < 9) r = 5;
 			// "Raffreddamento" satelliti esterni, lontani sia
@@ -4221,14 +4222,14 @@ void prepare_nearstar ()
 					r = 1;
 			}
 			// Attorno ai giganti gassosi, se il test precedente
-			// ä passato (s = 6/9/10, gassoso/substellare/stella),
-			// bä, possono anche esserci, a certe condizioni,
-			// delle lune abitabili. Per queste, perï, la stella
+			// ÔøΩ passato (s = 6/9/10, gassoso/substellare/stella),
+			// bÔøΩ, possono anche esserci, a certe condizioni,
+			// delle lune abitabili. Per queste, perÔøΩ, la stella
 			// dev'essere in genere di classe zero ed il pianeta
 			// gigante non dev'essere troppo lontano dalla stella.
-			// C'ä invece uguale probabilitÖ di trovare mondi
+			// C'ÔøΩ invece uguale probabilitÔøΩ di trovare mondi
 			// abitabili attorno agli oggetti substellari: al di
-			// lÖ della distanza dalla stella, tali lune possono
+			// lÔøΩ della distanza dalla stella, tali lune possono
 			// essere scaldate abbastanza da una stella mancata.
 			if (r==3 && s < 9) {
 				if (n > 7)
@@ -4240,13 +4241,13 @@ void prepare_nearstar ()
 				    nearstar_class == 11)
 					r = 8;
 			}
-			// Una luna ghiacciata ä esclusa, prima di arrivare
-			// almeno alla sesta orbita planetaria, perchÇ fa
+			// Una luna ghiacciata ÔøΩ esclusa, prima di arrivare
+			// almeno alla sesta orbita planetaria, perchÔøΩ fa
 			// comunque troppo caldo.
 			if (r==7 && n <= 5) r = 1;
-			// Ma lune ghiacciate sono comunque molto pió
-			// frequenti se la stella ä molto piccola e fredda:
-			// un pianeta in genere puï avere meccanismi interni
+			// Ma lune ghiacciate sono comunque molto piÔøΩ
+			// frequenti se la stella ÔøΩ molto piccola e fredda:
+			// un pianeta in genere puÔøΩ avere meccanismi interni
 			// che lo scaldano. Una luna no.
 			if ((nearstar_class==2||nearstar_class==5||
 			     nearstar_class==7||nearstar_class==11)
@@ -4261,8 +4262,8 @@ void prepare_nearstar ()
 	   normalizzazione delle orbite in base al principio di Keplero.
 	   Il principio di Keplero stabilisce che il raggio dell'orbita di
 	   un pianeta tende ad essere simile alla sommatoria dei raggi delle
-	   orbite di tutti i pianeti interni ad esso. Perï, per un numero di
-	   pianeti maggiore di 8, il principio non ä pió valido. Noctis
+	   orbite di tutti i pianeti interni ad esso. PerÔøΩ, per un numero di
+	   pianeti maggiore di 8, il principio non ÔøΩ piÔøΩ valido. Noctis
 	   rinormalizza le orbite oltre l'ottava, aggiungendo a tali orbite
 	   il 22% circa della sommatoria delle precedenti. Ovvero:
 
@@ -4274,25 +4275,25 @@ void prepare_nearstar ()
 	   SE si applica l'organizzazione di Noctis, il tutto diventerebbe:
 	   *	1  2  3  6  12  24  48  96  117  143  174  212
 
-	   Il 22% non ä un valore a caso: rappresenta all'incirca il rapporto
-	   fra i raggi delle orbite di Plutone e di Urano. Plutone ä circa del
-	   22% pió lontano dal Sole di Urano, cioä l'ottava orbita. Ovvio che
-	   non significa che un sistema planetario pió vasto debba per forza
-	   avere orbite organizzate in questo modo, anche perchÇ Plutone non
-	   ä certo un pianeta "naturalmente" formatosi assieme agli altri, ma
-	   pió probabilmente un satellite sfuggito o un corpo della nube di
-	   Oort catturato dal Sole. Perï bisogna dire che le influenze delle
+	   Il 22% non ÔøΩ un valore a caso: rappresenta all'incirca il rapporto
+	   fra i raggi delle orbite di Plutone e di Urano. Plutone ÔøΩ circa del
+	   22% piÔøΩ lontano dal Sole di Urano, cioÔøΩ l'ottava orbita. Ovvio che
+	   non significa che un sistema planetario piÔøΩ vasto debba per forza
+	   avere orbite organizzate in questo modo, anche perchÔøΩ Plutone non
+	   ÔøΩ certo un pianeta "naturalmente" formatosi assieme agli altri, ma
+	   piÔøΩ probabilmente un satellite sfuggito o un corpo della nube di
+	   Oort catturato dal Sole. PerÔøΩ bisogna dire che le influenze delle
 	   orbite dei pianeti interni, col proseguire della successione di
 	   Keplero, diventano sempre meno significative. Penso che tale
 	   successione, semplicemente, debba essere in qualche modo limitata,
-	   a un certo punto: ä improbabile che ci siano pianeti in orbita
+	   a un certo punto: ÔøΩ improbabile che ci siano pianeti in orbita
 	   stabile a distanze come quelle risultanti per le orbite oltre
 	   l'ottava. Noctis annovera anche stelle con ben 20 pianeti!
 
-	   Come ultima annotazione, il raggio delle orbite ä influenzato
+	   Come ultima annotazione, il raggio delle orbite ÔøΩ influenzato
 	   anche dalla massa dei pianeti. Pianeti che hanno all'interno delle
-	   loro orbite giganti gassosi saranno un po' pió lontani della media
-	   perchÇ altrimenti le loro orbite potrebbero essere troppo
+	   loro orbite giganti gassosi saranno un po' piÔøΩ lontani della media
+	   perchÔøΩ altrimenti le loro orbite potrebbero essere troppo
 	   destabilizzate dalla massa dei giganti. */
 
 no_moons:
@@ -4317,7 +4318,7 @@ no_moons:
 	   normalizzazione orbite lunari in base al principio di Keplero,
 	   a sua volta rielaborato come nelle precedenti annotazioni,
 	   solo che la limitazione avviene per orbite oltre la terza al 12%,
-	   ed ä molto pió effettiva oltre l'ottava orbita (al 2.5%). */
+	   ed ÔøΩ molto piÔøΩ effettiva oltre l'ottava orbita (al 2.5%). */
 
 	n = nearstar_nop;
 	while (n < nearstar_nob) {
@@ -4342,7 +4343,7 @@ no_moons:
 
 	for (n = 0; n < nearstar_nop; n++) {
 		// A meno di un raggio e mezzo dal centro del pianeta,
-		// sarÖ un po' difficile trovarci un anello stabile.
+		// sarÔøΩ un po' difficile trovarci un anello stabile.
 		nearstar_p_ring[n] = 0.75 * nearstar_p_ray[n] * (2 + random(3));
 		// I pianeti piccoli raramente hanno degli anelli.
 		// Non hanno abbastanza massa per frantumare
@@ -4450,7 +4451,7 @@ unsigned px, py;
 	variabili all'uopo adibite: c, gr, r, g, b, cr, cx, cy, lave,
 	crays, px, py, ed a.
 
-	kfract ä la densitÖ delle fratture sui pianeti.
+	kfract ÔøΩ la densitÔøΩ delle fratture sui pianeti.
 	viene posta a 1 per fare i fulmini nel cielo.
 
 	Alcune ne chiamano altre, dello stesso gruppo, per risparmiare sui
@@ -4458,20 +4459,20 @@ unsigned px, py;
 	usano, o comunque non usano solo queste.
 
 	Lavorano tutte su p_background anche se, al momento della definizione
-	della superficie di una luna, p_background verrÖ scambiato con
-	s_background, che inizialmente ä la mappa della superficie stellare.
-	Il fatto ä che da una luna ä probabile vedere il pianeta attorno al
+	della superficie di una luna, p_background verrÔøΩ scambiato con
+	s_background, che inizialmente ÔøΩ la mappa della superficie stellare.
+	Il fatto ÔøΩ che da una luna ÔøΩ probabile vedere il pianeta attorno al
 	quale quella data luna sta girando, quindi bisogna mantenere separate
 	la mappa planetaria e quella lunare. Non ci si preoccupa, invece, di
-	avere pió di due corpi visibili, perchÇ:
+	avere piÔøΩ di due corpi visibili, perchÔøΩ:
 
 		- il primo e il secondo pianeta di qualsiasi stella non
 		  possono, per convenzione, avere lune; d'altra parte, dal
-		  terzo pianeta in poi la superficie stellare non ä visibile
-		  nei dettagli, e puï essere approssimata da un "whiteglobe",
+		  terzo pianeta in poi la superficie stellare non ÔøΩ visibile
+		  nei dettagli, e puÔøΩ essere approssimata da un "whiteglobe",
 		  un globo bianco in tinta unita.
 		- le lune visibili da un'altra luna appaiono sempre piuttosto
-		  piccole, per cui non ä possibile scorgere i dettagli della
+		  piccole, per cui non ÔøΩ possibile scorgere i dettagli della
 		  superficie di una luna dal punto di vista di un'altra.
 
 	Infine, le stesse considerazioni sulle mappe delle superfici,
@@ -4549,7 +4550,7 @@ void crater () // un cratere.
 	}
 }
 
-void band () /* banda scura orizzontale: puï essere portata al chiaro
+void band () /* banda scura orizzontale: puÔøΩ essere portata al chiaro
 		negando la superficie sulla base del fondo scala 0x3E */
 {
 	asm {   les di, dword ptr p_background
@@ -4566,7 +4567,7 @@ nvrain: asm {	mov al, es:[di]
 		jnz nvrain }
 }
 
-void wave () // Una banda come sopra, perï ondulata.
+void wave () // Una banda come sopra, perÔøΩ ondulata.
 {
 	asm {   les di, dword ptr p_background
 		mov px, 360
@@ -4591,7 +4592,7 @@ nvrain: asm {	fild px
 
 void fracture (unsigned char far *target, float max_latitude)
 { // solco scuro: tipo le linee su Europa.
-  // ha dei parametri perchÇ viene usata anche per simulare i fulmini
+  // ha dei parametri perchÔøΩ viene usata anche per simulare i fulmini
   // quando piove sulla superficie dei pianeti abitabili.
 	a = random (360) * deg;
 	gr ++;
@@ -4693,20 +4694,20 @@ void crater_juice ()
    piuttosto che su "p_background", e a risoluzione dimezzata.
    Inoltre, MOLTO IMPORTANTE, il campo d'esistenza dell'albedo
    delle nubi non va da 0 a 0x3E ovvero da 0 a 62, MA da 0 a 0x1F,
-   ovvero da 0 a 31. Questo perchÇ, al momento della discesa sulla
+   ovvero da 0 a 31. Questo perchÔøΩ, al momento della discesa sulla
    superficie, l'albedo media di p_background viene usata per
-   determinare, sui pianeti abitabili, qualora lo scenario ä
+   determinare, sui pianeti abitabili, qualora lo scenario ÔøΩ
    oceanico o no (se si scende in mare, si deve sempre trovare
-   il mare). Dato che l'albedo di p_background ä alterata da
+   il mare). Dato che l'albedo di p_background ÔøΩ alterata da
    quella delle nubi contenuta in objectschart, essa viene
    ripristinata al momento della scelta del luogo di sbarco,
    dalla funzione "planets", SOTTRAENDO l'albedo delle nubi
    a quella della superficie di sbarco di p_background.
-   Se perï, si lascia l'alterazione dovuta alle nubi, alterare
-   l'albedo del territorio sottostante di oltre la metÖ del campo
+   Se perÔøΩ, si lascia l'alterazione dovuta alle nubi, alterare
+   l'albedo del territorio sottostante di oltre la metÔøΩ del campo
    d'esistenza 0..62, si rischia di sottrarre un valore troppo alto
    e di ricondurre l'albedo che viene calcolata sotto al limite che
-   determina quando lo scenario ä oceanico (i mari hanno l'albedo pió
+   determina quando lo scenario ÔøΩ oceanico (i mari hanno l'albedo piÔøΩ
    bassa in assoluto). Il risultato sarebbe che una zona normalmente
    coperta di terra, al passaggio di una grossa nube diventerebbe mare. */
 
@@ -4757,7 +4758,7 @@ void storm () // tempesta (una grande macchia chiara sull'atmosfera).
 /* Calcola la superficie estrapolandola dai dati sul pianeta e dalla
    tabella pseudo-casuale assegnatagli.
    Include il terminatore giorno-notte scurendo l'emisfero notturno
-   per un angolo di 130¯, non di 180¯ per via della luce diffusa e del
+   per un angolo di 130ÔøΩ, non di 180ÔøΩ per via della luce diffusa e del
    campo ridotto ai bordi dei globi.
    "colorbase" viene assegnato a 192 per i pianeti, a 128 per le lune. */
 
@@ -4776,14 +4777,14 @@ void surface (int logical_id, int type,
 	/* impostazione del periodo di rotazione
 	   "rotation" marca un punto ideale che rappresenta
 	   l'attuale rotazione del pianeta, in gradi, fra 0 e 359.
-	   il periodo di rotazione ä estratto in un range molto ampio,
+	   il periodo di rotazione ÔøΩ estratto in un range molto ampio,
 	   con risoluzione di 1 secondo. */
 
 	fast_srand (seedval + 4112);
 
-	/* "rtperiod" ä il tempo, in secondi, che il pianeta impiega a
+	/* "rtperiod" ÔøΩ il tempo, in secondi, che il pianeta impiega a
 	   ruotare di un grado sul proprio asse. Il tempo impiegato per
-	   una rotazione completa ä quindi, in secondi, 360 * rtperiod. */
+	   una rotazione completa ÔøΩ quindi, in secondi, 360 * rtperiod. */
 
 	nearstar_p_rtperiod[logical_id] = 10 * (ranged_fast_random(50) + 1)
 					+ 10 * ranged_fast_random(25)
@@ -4802,9 +4803,9 @@ void surface (int logical_id, int type,
 
 	/* selezione della tabella pseudo relativa a questo pianeta
 	   la tabella pseudo della funzione "random" propria al C++ ha
-	   una discreta probabilitÖ di ricorrenza, ma essendo integrata
+	   una discreta probabilitÔøΩ di ricorrenza, ma essendo integrata
 	   con la "ranged_fast_random", la ricorrenza viene annullata
-	   ("ranged_fast_random" ha un'enormitÖ in pió di tabelle). */
+	   ("ranged_fast_random" ha un'enormitÔøΩ in piÔøΩ di tabelle). */
 
 	fast_srand (seedval * 10);
 	seed = fast_random (0xFFFF);
@@ -4837,7 +4838,7 @@ rndpat:	asm {   add ax, cx
 
 	/* elaborazione della superficie specifica.
 	   l'elaborazione dell'overlay per l'atmosfera,
-	   nel caso ce ne sia bisogno, ä contemporanea. */
+	   nel caso ce ne sia bisogno, ÔøΩ contemporanea. */
 
 	srand (seed);
 	QUADWORDS = 16200;
@@ -5244,8 +5245,8 @@ void ring (int planet_id, double ox, double oy, double oz, int start, int layers
 }
 
 /* Visualizza appopriatamente i pianeti, come punti, barlumi di luce
-   o globi ben visibili, a seconda di distanza e raggio. C'ä un terzo
-   modo in cui un corpo planetario puï rendersi visibile: con una falce.
+   o globi ben visibili, a seconda di distanza e raggio. C'ÔøΩ un terzo
+   modo in cui un corpo planetario puÔøΩ rendersi visibile: con una falce.
    L'effetto falce viene realizzato da "glowinglobe". */
 
 void planets ()
@@ -5615,20 +5616,20 @@ void init_FP_segments ()
 
 	Gestione cartografia galattica.
 
-	Ad ogni stella ä assegnato un codice d'identificazione univoco,
+	Ad ogni stella ÔøΩ assegnato un codice d'identificazione univoco,
 	derivante dalle sue coordinate. A tale codice si fa riferimento
 	per l'associazione dei nomi delle stelle. I codici identificativi
 	dei pianeti vengono calcolati a partire da quello della loro stella,
-	pió il numero (progressivo) del pianeta in ordine di distanza.
+	piÔøΩ il numero (progressivo) del pianeta in ordine di distanza.
 
 */
 
 double 	laststar_x, laststar_y, laststar_z;
 
 /* Determina se una certa stella, di cui si specifica il codice
-   d'identificazione univoco, ä attualmente nel range dei sensori.
-   Ritorna 1 quando ä visibile, 0 se non lo ä.
-   Quando ä visibile, le coordinate della stella sono riportate
+   d'identificazione univoco, ÔøΩ attualmente nel range dei sensori.
+   Ritorna 1 quando ÔøΩ visibile, 0 se non lo ÔøΩ.
+   Quando ÔøΩ visibile, le coordinate della stella sono riportate
    nelle variabili "laststar_x", "laststar_y" e "laststar_z". */
 
 char isthere (double star_id)
@@ -5834,12 +5835,12 @@ char digimap[65*5] = {
 	 0, 0, 3, 5, 5, // 35. cancelletto (rappresentato da una piccola n.)
 	 2, 2, 6, 2, 2, // 36. sistro
 	 1, 4, 2, 1, 4, // 37. percento
-	 0, 0, 2, 0, 0, // 38. e commericale (non ä possibile visualizzarla)
+	 0, 0, 2, 0, 0, // 38. e commericale (non ÔøΩ possibile visualizzarla)
 	 0, 2, 2, 0, 0, // 39. apice
 	 4, 2, 2, 2, 4, // 40. parentesi tonda aperta
 	 1, 2, 2, 2, 1, // 41. parentesi tonda chiusa
 	 0, 0, 7, 2, 2, // 42. asterisco
-	 0, 2, 7, 2, 0, // 43. segno pió
+	 0, 2, 7, 2, 0, // 43. segno piÔøΩ
 	 0, 0, 0, 2, 1, // 44. virgola
 	 0, 0, 7, 0, 0, // 45. segno meno
 	 0, 0, 0, 0, 2, // 46. punto
@@ -5896,13 +5897,13 @@ char digimap[65*5] = {
 };
 
 /* Mappa caratteri per il computer ed il sistema operativo:
-   font a pió alta risoluzione (32 x 36 pixels).
+   font a piÔøΩ alta risoluzione (32 x 36 pixels).
    Viene caricato in n_globes_map + gl_bytes ed occupa 10800 bytes.
    Questi 10182 bytes (gl_brest) sono praticamente una minuscola estensione
-   dell'area n_globes_map che di per sÇ, contenendo una semi-texture
-   di 32Kb per la superficie dei mari, ä stata estesa da 22586 a 32768. */
+   dell'area n_globes_map che di per sÔøΩ, contenendo una semi-texture
+   di 32Kb per la superficie dei mari, ÔøΩ stata estesa da 22586 a 32768. */
 
-unsigned long far *digimap2; // verrÖ assegnato a n_globes_map + gl_bytes
+unsigned long far *digimap2; // verrÔøΩ assegnato a n_globes_map + gl_bytes
 
 /* Cupola panoramica. */
 
@@ -6248,14 +6249,14 @@ void surrounding (char compass_on, int openhudcount)
 	pp_delta = (pp_temp - tp_temp) * 0.05; tp_temp += pp_delta;
 	pp_delta = (pp_pressure - tp_pressure) * 0.02; tp_pressure += pp_delta;
 	pp_delta = (pp_pulse - tp_pulse) * 0.01; tp_pulse += pp_delta;
-	//unitÖ di debugging dell'albedo:
+	//unitÔøΩ di debugging dell'albedo:
 	//sprintf (outhudbuffer, "GRAVITY %2.3f FG & TEMPERATURE %+3.1f@C & PRESSURE %2.3f ATM & PULSE %3.0f PPS", tp_gravity, tp_temp, tp_pressure, (float)albedo);
 	sprintf (outhudbuffer, "GRAVITY %2.3f FG & TEMPERATURE %+3.1f@C & PRESSURE %2.3f ATM & PULSE %3.0f PPS", tp_gravity, tp_temp, tp_pressure, tp_pulse);
 	wrouthud (2, 192, NULL, outhudbuffer);
 }
 
 /* Salva una fotografia dello schermo sul file "SNAPXXXX.BMP":
-   XXXX ä un numero progressivo di disambiguazione. */
+   XXXX ÔøΩ un numero progressivo di disambiguazione. */
 
 extern long star_label_pos;
 extern char star_label[25];
@@ -6392,7 +6393,7 @@ void snapshot (int forcenumber, char showdata)
 }
 
 /*
-    Consumi supplementari di litio, dal pió dispendioso al pió economico:
+    Consumi supplementari di litio, dal piÔøΩ dispendioso al piÔøΩ economico:
 	- orbita vimana:			1 KD ogni 7 secondi.
 	- inseguimento a punto lontano: 	1 KD ogni 18 secondi.
 	- inseguimento a punto fisso:		1 KD ogni 29 secondi.
