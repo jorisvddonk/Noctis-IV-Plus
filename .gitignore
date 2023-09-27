@@ -3,3 +3,7 @@ data/SURFACE.BIN
 data/GOESFILE.TXT
 
 modules/NOCTIS.EXE
+
+gallery/*
+movies/*
+source/BIN/*
