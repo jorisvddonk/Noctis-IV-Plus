@@ -1,0 +1,139 @@
+<html>
+<title>Noctis IV Moviemaking - The Manual</title>
+
+<body bgcolor=000000 text=0099ff></body>
+<center>
+  <font size=6>Noctis IV Moviemaking - The Manual</font>
+</center><br>
+<b>Notes by neuzd:<BR> some changes over this document have been made to keep it up to date.
+  The version of the moviemaker ported into NIV+ is that of NICE r11.5, arguably it's the latest version
+  developed.</b><br>
+<br>
+<br>
+Finally this version of the moviemaker <b>works also in space</b>, the second part of this manual explains the main
+changes.<BR>
+A quite interesting feature is that the movie does not get interrupted if you choose to land on the surface of a
+planet.<BR>
+When getting back from the surface otherwise, only 100 "game" frames gets recorded after which the movie shuts off
+automatically.<BR>
+<BR>
+In any occasion, to access the Moviemaker, hit F3.<br>
+<br>
+
+<BR>
+<b>Mega's original manual:</b><BR>
+The Moviemaker is a simple utility that really does nothing more than taking a snapshot at a constant rate. For example,
+the user can take a snapshot every 5 in-game frames. Since we do not know if Felysians suffer from epilepsy, you'll be
+able to disable the black flash that you'll see whenever you take a snapshot. To actually turn a recorded movie into a
+.avi
+file, you'll need a utility that allows you to do that. <a href="https://ffmpeg.org/">ffmpeg</a> can do this for you,
+for free!<br>
+<br>
+Now, you'll probably be wondering what the Moviemaker actually looks like, eh? Well, here it is:<br>
+<center><img src=./files/moviemaker.png></center><br>
+<br>
+As you can hopefully see, the moviemaker is in this case already running. I'll describe to you what each and every thing
+does.<br>
+<b>"NOCTIS IV CE MOVIEMAKER"</b> - This is just the title of the tool. One little note though: the background of this
+text will brighten a bit whenever you're recording.<br>
+<b>"FPS: ##.##"</b> - Shows the average Frames Per Second rate of the movie so-far you've recorded it. If you want to
+turn your movie into an .avi file, inputting the number next to "FPS:" as the .avi's FPS rate, you'll have a perfect
+1-ingame-second-every-real-second movie. The FPS rate will only show whenever you're recording a movie.<br>
+<b>"MOVIEDECK ### (CTRL +/-)"</b> - This displays the current Moviedeck used. A Moviedeck is nothing more than a
+specific folder named after the moviedeck's number. If the moviedeck's number is 1, the folder it'll record to is named
+"001". If the number is 604, the folder it'll record to is named "604". You can find the moviedecks in your
+"Noctis\Movies" folder. You can change Moviedeck by holding Control and the + or - keys. The Moviedeck number will be 1
+every time you start up Noctis.<br>
+<b>"CAPTURE EVERY ### FRAMES (+/-)"</b> - This shows how (or actually: when) frames will be captured. If this is 1,
+every frame will be captured (capture,capture,capture,capture). If this is 2, every 2nd frame will be captured
+(capture,nocapture,capture,nocapture). If this is 3, every 3rd frame will be captured
+(capture,nocapture,nocapture,nocapture,capture). Change this number by pressing the + or - keys. This will be 1 every
+time you start up Noctis, and if you want a realtime (read: not timelapsed) movie, keep this at 1.<br>
+<b>"NO FLASH WHEN SCREENCAPTURE / BLACK FLASH WHEN SCREENCAPTURE (F)"</b> - This shows whether a black flash will be
+there when a frame is captured, or not. It's recommended to NOT have a black flash, since those black flashes can be
+quite irritating. Besides, a bright or dark line at the bottom of the screen will already signal you whenever a frame is
+captured. However, on old PCs, having a black flash MIGHT speedup the game. Use as your own risk, though. Toggle by
+pressing the F key.<br>
+<b>"WARNING: BLACK SCREEN! / MOVIEDECK EXISTS!"</b> - This shows you the warning signals. If this doesn't show up,
+you're ready to capture a movie without any complications, however, if this DOES show up, you should reconcider what
+you're doing. "BLACK SCREEN!" means that you've got both the black flash enabled, AND you're capturing every frame. This
+results in a screen that will remain black for the entire time you're capturing a movie. "MOVIEDECK EXISTS!" means that
+a moviedeck is already being used by a different movie. You can still overwrite the old movie, but this can result in a
+moviedeck containing one movie, and part of another. Imagine you've captured a 100 frame movie, and now you're capturing
+a 50 frame movie over it. This will mean that in the current moviedeck selected, you'll have two halves of a movie, and
+it'll be 100 frames total in length. So generally speaking, you should never ever capture a movie on a preexisting
+moviedeck!<br>
+<b>"START RECORDING / STOP RECORDING (ENTER)"</b> - This is just a text that tells you how to start or stop recording a
+movie. Just hit ENTER and you'll be capturing your very own movie. Now just hope that those actors will do whatever YOU
+want them to do.. As every director knows, animals are hard to handle with... Note that as soon as you hit enter, the
+Moviemaker window will close. You can only <b>start</b> recording when the Moviemaker window is open, but
+<b>stopping</b> recording always works, even when the Moviemaker window is closed.<br>
+
+<br>
+<B>Pausing the recording of a movie ('p' key)</b><BR>
+This new feature allows you to pause the recording of your movie....easy since here, uh?<BR>
+When you pause a movie either a message will show (if in the SD) or the movie maker status window will pop up open
+again.<BR>
+To resume the recording press P again or ENTER.<BR>
+Be very careful when using this feature though, if you always remember when you paused a movie and later on you resume
+and correctly "close" it, nothing bad should happen.<BR>
+<br>
+
+<b>neuzd Space Moviemaking manual:</b>
+<br>
+Here we are! Every Stardrifter has been dreaming of this and now it is real....ok I only found an effective way to port
+Mega's work onto NIV+, yeah...lame, but who cares! SPACE MOVIEMAKING!</BR>
+The moviemaker control panel is now displayed as messages on the lower right of the HUD.<BR>
+This also means you will not have any information displayed while on the roof of your stardrifter, but it just means you
+cannot see it, so have your movie set up inside the SD and then do whatever you want!<BR>
+<BR>
+
+
+Here's a list of messages which reflect the status of the movie.
+<BR>
+<BR>
+<B>MOVIEMAKER</B> : default message, it serves to remind you the movie control panel is ON.<BR>
+
+<B>MVMENU OFF</B> : when you close the moviemaker.
+<BR>
+<BR>
+<B>CAPT x FR</B> (capture every x frames)<BR>
+Appears when you change the capture rate (+/-)<BR>
+<BR>
+<B>x EXISTS</B> : moviedeck x already exists watch out<BR>
+<B>MD x FREE</B> : moviedeck x does not exist, you're free to start recording<BR>
+These 2 messages appear while you're changing moviedeck (CTRL +/-). Also this information is the first message that
+appears when you bring up the moviemaker<BR>
+<BR>
+<B>BLK FLASH</B> : the black screen flashing every frame is active.<BR>
+<B>NO FLASH</B> : there's no flashing when recording.<BR>
+The "black screen when capture" feature has been restored though no warning could be displayed for a total black screen
+situation.<BR>
+<BR>
+<B>PAUSE REC</B> : movie recording has been paused<BR>
+<B>RESUME REC</B> : movie recording has been resumed from pause<BR>
+These 2 messages appear whenever P is pressed. To resume a paused recording ENTER might be pressed as well.
+<BR><BR>
+Enjoy. neuzd
+<br>
+<br>
+
+So, now you know how to record a movie using the Moviemaker, but you still don't know how to actually turn a movie into
+an .avi.. Therefore, what follows is a simple step-to-step guide on how to do that using the excellent ImageToAvi
+tool.<br>
+1) hit Add Image Files.<br>
+2) navigate to your noctis\movies\MOVIEDECKNUMBER folder, where MOVIEDECKNUMBER is -ofcourse- the number of the
+moviedeck you want to record, such as "001"..<br>
+3) Select all files (ctrl A) and hit OK.<br>
+4) Hit OK again for the "# files added to list".<br>
+5) set Width to 320, set Height to 200, set Border Size Width to 0, and set Border Size Height to 0, too...<br>
+6) change Frames Per Second to the Frames Per Second you want your movie to have (preferably the same FPS rate as you
+have seen while recording the movie).<br>
+7) Hit Output File and change the location, if you so prefer.<br>
+8) Hit Compile Images, pick a codec and configure it (I'd pick Xvid or Microsoft Video 1), and sit back and relax.<br>
+9) Compress the resulting .avi file (Microsoft Video usually compresses to about 50% of it's original size!), and put it
+online somewhere! :)<br>
+<br>
+Note that the compression rate depends on the movie. A lot of detail (read: Felysian grass, for example) means larger
+filesize, OR worse quality.<br>
+Experiment a bit until you get the desired result...<br>
