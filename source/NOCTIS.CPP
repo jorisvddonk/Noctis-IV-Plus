@@ -4088,7 +4088,7 @@ void main ()
 						status("NO FLASH", 100);
 					}
 				}
-				if (c=='s')
+				if (c=='s' && !(labstar || labplanet))
 				{
 					if (roofspeed)
 					{
@@ -4103,7 +4103,7 @@ void main ()
 					
 				}
 				// Added a pause feature when filming a movie (neuzd)
-				if (c == 'p')
+				if (c == 'p' && !(labstar || labplanet))
 				{
 					if (movie)
 					{
