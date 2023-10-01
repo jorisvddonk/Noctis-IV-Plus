@@ -66,6 +66,7 @@ FIX: Fixed bug that caused r2.2 to not run correctly under Windows due to a stup
 
 Release 2.3:
 ADD: 'Tab' key in the Stardrifter now toggles 'anti aliasing' on and off.
-ADD: 'F1' now shows an about/help page with keyboard shortcuts
+ADD: 'F1' now shows an about/help page with keyboard shortcuts.
 FIX: 's' and 'p' don't activate their respective functions when labeling, anymore.
 UPDATED manuals.
+UPDATED starmap (2023_10).
