@@ -9,12 +9,276 @@
 #include "noctis-d.h"
 #include "noctis-0.h"
 #include "noctis-2.h"
+
+#include <stdio.h>
+#include <string.h>
+
 const double deg = M_PI / 180;
 
 extern char exitflag;
 extern char entryflag;
 extern void planetary_main ();
 extern float tiredness;
+
+void read_vga_palette(unsigned char *palette)
+{
+    int i;
+    outp(0x3C7, 0);  /* set read index to 0 */
+    for (i = 0; i < 256 * 3; i++) {
+        unsigned char val = inp(0x3C9);  /* 6-bit VGA value */
+        palette[i] = (val << 2) | (val >> 4);  /* scale to 8-bit */
+    }
+}
+
+void dump_planet_texture(double star_x, double star_y, double star_z, int body_index)
+{
+	char filename[64];
+	int row;
+	double star_id;
+
+	srand ((long)(star_x/100000*star_y/100000*star_z/100000));
+	int star_class = random(star_classes);
+
+	printf("Star coordinates: X=%.0f Y=%.0f Z=%.0f\n", star_x, star_y, star_z);
+	printf("Star class: %d\n", star_class);
+	printf("Body index: %d\n", body_index);
+
+	/* Set dzat to the star's coordinates so isthere() search is centered there */
+	dzat_x = star_x;
+	dzat_y = star_y;
+	dzat_z = star_z;
+
+	/* Compute star_id the same way the game does */
+	star_id = (star_x / 100000.0) * (star_y / 100000.0) * (star_z / 100000.0);
+
+	printf("Searching for star_id = %.14f\n", star_id);
+	printf("idscale = %.14f\n", idscale);
+
+	if (!isthere(star_id)) {
+		printf("Error: star not found by isthere()\n");
+		return;
+	}
+
+	printf("Found star at: X=%.0f Y=%.0f Z=%.0f\n", laststar_x, laststar_y, laststar_z);
+
+	/* Use the exact coordinates isthere() resolved */
+	ap_target_x = laststar_x;
+	ap_target_y = laststar_y;
+	ap_target_z = laststar_z;
+
+	/* Set nearstar variables directly, bypassing prepare_nearstar()'s
+	copy from ap_target which may read a different module's globals */
+	nearstar_x = laststar_x;
+	nearstar_y = laststar_y;
+	nearstar_z = laststar_z;
+	nearstar_class = star_class;
+	nearstar_ray   = ((float)class_ray[star_class]
+					+ (float)(class_rayvar[star_class] / 2)) * 0.001f;
+	nearstar_r     = class_rgb[3 * star_class + 0];
+	nearstar_g     = class_rgb[3 * star_class + 1];
+	nearstar_b     = class_rgb[3 * star_class + 2];
+	nearstar_spin  = 0;
+
+	ap_target_class = star_class;
+	ap_target_ray   = nearstar_ray;
+	ap_target_r     = nearstar_r;
+	ap_target_g     = nearstar_g;
+	ap_target_b     = nearstar_b;
+	ap_target_spin  = 0;
+
+	printf("Calling prepare_nearstar with nearstar: x=%f y=%f z=%f\n",
+		nearstar_x, nearstar_y, nearstar_z);
+
+	prepare_nearstar();
+
+	printf("nearstar_identity = %.14f\n", nearstar_identity);
+	printf("nearstar_nop = %d, nearstar_nob = %d\n", nearstar_nop, nearstar_nob);
+
+	if (body_index < 0 || body_index >= nearstar_nob) {
+		printf("Error: body_index %d out of range (system has %d bodies)\n",
+		       body_index, nearstar_nob);
+		return;
+	}
+
+	printf("Planet type: %d\n", nearstar_p_type[body_index]);
+
+	double seedval = nearstar_identity + body_index + 1;
+
+
+	/* Initialize graphics mode - needed for palette and planet rendering */
+	_320_200_256();
+	initscanlines();
+	init_FP_segments();
+
+	/* Set up initial palettes */
+	tavola_colori(range8088, 0, 64, nearstar_r, nearstar_g, nearstar_b);
+	tavola_colori(tmppal, 0, 256, 64, 64, 64);
+
+	/* Set dzat to be near the planet so planets() renders it */
+	planet_xyz(body_index);
+	dzat_x = plx + nearstar_p_ray[body_index] * 3;
+	dzat_y = ply;
+	dzat_z = plz;
+
+	/* Compute dsd - distance from star needed by planets() */
+	double dxx = dzat_x - nearstar_x;
+	double dyy = dzat_y - nearstar_y;
+	double dzz = dzat_z - nearstar_z;
+	dsd = sqrt(dxx*dxx + dyy*dyy + dzz*dzz) + 1;
+
+	/* Clear render buffer */
+	pclear(adapted, 0);
+
+	/* Render planets - this sets up the palette entries 192-255 */
+	from_vehicle();
+	planets();
+
+	/* Now read back the actual VGA palette that planets() set */
+	unsigned char vga_palette[256 * 3];
+	read_vga_palette(vga_palette);
+
+	/* Generate surface texture into p_background */
+	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+
+	/* Build BMP palette from captured VGA palette */
+	unsigned char bmp_palette[256 * 4];
+	for (int i = 0; i < 256; i++) {
+		bmp_palette[i * 4 + 2] = vga_palette[i * 3 + 0]; /* Red */
+		bmp_palette[i * 4 + 1] = vga_palette[i * 3 + 1]; /* Green */
+		bmp_palette[i * 4 + 0] = vga_palette[i * 3 + 2]; /* Blue */
+		bmp_palette[i * 4 + 3] = 0;
+	}
+
+
+
+	printf("Generating surface texture...\n");
+	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+
+	sprintf(filename, "PLANET.BMP");
+	printf("Saving to %s...\n", filename);
+
+#ifdef WINDOWS
+	FILE *fp = fopen(filename, "wb");
+#else
+	int fp = _creat(filename, 0);
+#endif
+	if (fp == -1) {
+		printf("Error: Cannot create file %s\n", filename);
+		return;
+	}
+
+	/* BMP File Header - 14 bytes */
+	unsigned char bmpFileHeader[14];
+	unsigned int fileSize = 14 + 40 + 256*4 + 360*120;
+	unsigned int offsetToPixels = 14 + 40 + 256*4;
+	bmpFileHeader[0] = 'B';
+	bmpFileHeader[1] = 'M';
+	bmpFileHeader[2] = fileSize & 0xFF;
+	bmpFileHeader[3] = (fileSize >> 8) & 0xFF;
+	bmpFileHeader[4] = (fileSize >> 16) & 0xFF;
+	bmpFileHeader[5] = (fileSize >> 24) & 0xFF;
+	bmpFileHeader[6] = 0;
+	bmpFileHeader[7] = 0;
+	bmpFileHeader[8] = 0;
+	bmpFileHeader[9] = 0;
+	bmpFileHeader[10] = offsetToPixels & 0xFF;
+	bmpFileHeader[11] = (offsetToPixels >> 8) & 0xFF;
+	bmpFileHeader[12] = (offsetToPixels >> 16) & 0xFF;
+	bmpFileHeader[13] = (offsetToPixels >> 24) & 0xFF;
+
+	/* BMP Info Header - 40 bytes */
+	unsigned char bmpInfoHeader[40];
+	bmpInfoHeader[0] = 40; bmpInfoHeader[1] = 0; bmpInfoHeader[2] = 0; bmpInfoHeader[3] = 0;
+	bmpInfoHeader[4] = 360 & 0xFF; bmpInfoHeader[5] = (360 >> 8) & 0xFF; bmpInfoHeader[6] = 0; bmpInfoHeader[7] = 0;
+	bmpInfoHeader[8] = 120 & 0xFF; bmpInfoHeader[9] = (120 >> 8) & 0xFF; bmpInfoHeader[10] = 0; bmpInfoHeader[11] = 0;
+	bmpInfoHeader[12] = 1; bmpInfoHeader[13] = 0;
+	bmpInfoHeader[14] = 8; bmpInfoHeader[15] = 0;
+	bmpInfoHeader[16] = 0; bmpInfoHeader[17] = 0; bmpInfoHeader[18] = 0; bmpInfoHeader[19] = 0;
+	bmpInfoHeader[20] = 0; bmpInfoHeader[21] = 0; bmpInfoHeader[22] = 0; bmpInfoHeader[23] = 0;
+	bmpInfoHeader[24] = 0; bmpInfoHeader[25] = 0; bmpInfoHeader[26] = 0; bmpInfoHeader[27] = 0;
+	bmpInfoHeader[28] = 0; bmpInfoHeader[29] = 0; bmpInfoHeader[30] = 0; bmpInfoHeader[31] = 0;
+	bmpInfoHeader[32] = 256 & 0xFF; bmpInfoHeader[33] = (256 >> 8) & 0xFF; bmpInfoHeader[34] = 0; bmpInfoHeader[35] = 0;
+	bmpInfoHeader[36] = 256 & 0xFF; bmpInfoHeader[37] = (256 >> 8) & 0xFF; bmpInfoHeader[38] = 0; bmpInfoHeader[39] = 0;
+
+#ifdef WINDOWS
+	fwrite(bmpFileHeader, 1, 14, fp);
+	fwrite(bmpInfoHeader, 1, 40, fp);
+#else
+	_write(fp, bmpFileHeader, 14);
+	_write(fp, bmpInfoHeader, 40);
+#endif
+
+	unsigned char palette[256 * 4];
+
+	int palette_offset;
+	if (nearstar_p_owner[body_index] > -1)
+		palette_offset = 128;  /* moon */
+	else
+		palette_offset = 192;  /* planet */
+
+	for (i = 0; i < 256; i++) {
+		int src = (palette_offset + i) % 256;
+		palette[i * 4 + 2] = vga_palette[src * 3 + 0]; /* Red */
+		palette[i * 4 + 1] = vga_palette[src * 3 + 1]; /* Green */
+		palette[i * 4 + 0] = vga_palette[src * 3 + 2]; /* Blue */
+		palette[i * 4 + 3] = 0;
+	}
+
+#ifdef WINDOWS
+	fwrite(palette, 1, 256 * 4, fp);
+	for (row = 119; row >= 0; row--)
+    	fwrite(fp, p_background + row * 360, 360);
+	fclose(fp);
+#else
+	_write(fp, palette, 256 * 4);
+	for (row = 119; row >= 0; row--)
+    	_write(fp, p_background + row * 360, 360);
+	_close(fp);
+#endif
+
+	/* Return to text mode */
+	_80_25_C();
+	
+	printf("Saved to %s\n", filename);
+}
+
+/* Check for planet dump mode - returns 1 if dump was done, 0 otherwise */
+int check_planet_dump_mode(int argc, char *argv[])
+{
+	double star_x, star_y, star_z;
+	int body_index, star_class;
+	
+	if (argc < 2) return 0;
+	
+	if (strcmp(argv[1], "-dump") != 0 && strcmp(argv[1], "-DUMP") != 0) {
+		return 0;
+	}
+	
+	printf("Planet Texture Dump Mode\n");
+	printf("=======================\n\n");
+	
+	if (argc != 6) {
+		printf("Usage: %s -dump <star_x> <star_y> <star_z> <body_index>\n", argv[0]);
+		printf("\nArguments:\n");
+		printf("  star_x      - X coordinate of the parent star (in Parsis)\n");
+		printf("  star_y      - Y coordinate of the parent star (in Parsis)\n");
+		printf("  star_z      - Z coordinate of the parent star (in Parsis)\n");
+		printf("  body_index  - Index of the planet/moon (0 = first planet)\n");
+		printf("\nExample: %s -dump -18928 29680 -67336 3\n", argv[0]);
+		return 1;
+	}
+	
+	star_x = atof(argv[2]);
+	star_y = -atof(argv[3]);
+	star_z = atof(argv[4]);
+	body_index = atoi(argv[5]);
+	
+	printf("Star coordinates: X=%.0f Y=%.0f Z=%.0f\n", star_x, star_y, star_z);
+	printf("Star class: %d\n", star_class);
+	printf("Body index: %d\n", body_index);
+	
+	return 1;
+}
 
 /* Roba importata da noctis-0.cpp per alleggerirlo */
 
@@ -2087,7 +2351,7 @@ float starmass_correction[star_classes] = {
 
 extern unsigned _stklen = 0x1800;
 
-void main ()
+void main (int argc, char *argv[])
 {
 	float satur, DfCoS;
      //	float user_drawing_range;
@@ -2129,6 +2393,42 @@ void main ()
 	long p1, p2, p3, p4;
 
 	harderr (caught_somewhere_in_time);
+
+	/* Check for planet dump mode */
+	if (check_planet_dump_mode(argc, argv)) {
+		/* Allocate minimal memory needed for planet generation */
+		n_offsets_map = (unsigned char far  *) farmalloc (om_bytes);
+		n_globes_map  = (char far  *) farmalloc ((unsigned)gl_bytes+(unsigned)gl_brest);
+		s_background  = (unsigned char far  *) farmalloc (st_bytes);
+		p_background  = (unsigned char far  *) farmalloc (pl_bytes);
+		p_surfacemap  = (unsigned char huge *) farmalloc (ps_bytes);
+		objectschart  = (quadrant far       *) farmalloc (oc_bytes);
+		pvfile        = (unsigned char far  *) farmalloc (pv_bytes);
+		adapted       = (unsigned char far  *) farmalloc (sc_bytes);
+		txtr          = (unsigned char huge *) p_background;
+		digimap2      = (unsigned long far *) &n_globes_map[gl_bytes];
+		
+		if (p_background && objectschart) {
+			ap_target_x = atof(argv[2]);
+			ap_target_y = -atof(argv[3]);
+			ap_target_z = atof(argv[4]);
+			dump_planet_texture(ap_target_x, ap_target_y, ap_target_z, atoi(argv[5]));
+		} else {
+			printf("Error: Not enough memory\n");
+		}
+		
+		/* Free memory */
+		if (n_offsets_map) farfree(n_offsets_map);
+		if (n_globes_map) farfree(n_globes_map);
+		if (s_background) farfree(s_background);
+		if (p_background) farfree(p_background);
+		if (p_surfacemap) farfree(p_surfacemap);
+		if (objectschart) farfree(objectschart);
+		if (pvfile) farfree(pvfile);
+		if (adapted) farfree(adapted);
+		
+		return;
+	}
 
 	for (ir = 0; ir < 200; ir ++) m200[ir] = ir * 200;
 

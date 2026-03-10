@@ -218,6 +218,7 @@ extern double nearstar_p_ring       [maxbodies];
 extern double nearstar_p_tilt       [maxbodies];
 extern double nearstar_p_ray        [maxbodies];
 extern double nearstar_p_orb_ray    [maxbodies];
+extern double nearstar_p_orb_seed   [maxbodies];
 extern double nearstar_p_orb_tilt   [maxbodies];
 extern double nearstar_p_orb_orient [maxbodies];
 extern double nearstar_p_orb_ecc    [maxbodies];

@@ -9,18 +9,34 @@ cd ..
 if exist bin\noctis.exe del bin\noctis.exe
 make -fnoctis.mak -DALL=DEF_ALL -B
 if exist bin\noctis.exe goto success
-pause
+rem pause
 goto done
 
 :success
 copy bin\noctis.exe ..\modules\noctis.exe /y
 copy supports.nct ..\data /y
 
+if "%1"=="-run" if "%2"=="-dump" goto run_dump
+if "%1"=="-run" goto run
+goto done
+
+:run
+pushd ..
+modules\noctis.exe
+popd
+goto done
+
+:run_dump
+pushd ..
+modules\noctis.exe -dump -18928 29680 -67336 3
+popd
+goto done
+
 rem del noctis.exe
-pause
+rem pause
 :done
 
-cd ..
-modules\noctis.exe
-cd ..
-cd source
+rem cd ..
+rem modules\noctis.exe
+rem cd ..
+rem cd source
