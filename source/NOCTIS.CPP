@@ -30,10 +30,76 @@ void read_vga_palette(unsigned char *palette)
     }
 }
 
+void save_bmp(char *filename, unsigned char far *pixels, int width, int height, unsigned char *palette)
+{
+	int row;
+
+#ifdef WINDOWS
+	FILE *fp = fopen(filename, "wb");
+#else
+	int fp = _creat(filename, 0);
+#endif
+	if (fp == -1) {
+		printf("Error: Cannot create file %s\n", filename);
+		return;
+	}
+
+	unsigned int fileSize = 14 + 40 + 256*4 + width*height;
+	unsigned int offsetToPixels = 14 + 40 + 256*4;
+
+	/* BMP File Header - 14 bytes */
+	unsigned char bmpFileHeader[14];
+	bmpFileHeader[0] = 'B';
+	bmpFileHeader[1] = 'M';
+	bmpFileHeader[2] = fileSize & 0xFF;
+	bmpFileHeader[3] = (fileSize >> 8) & 0xFF;
+	bmpFileHeader[4] = (fileSize >> 16) & 0xFF;
+	bmpFileHeader[5] = (fileSize >> 24) & 0xFF;
+	bmpFileHeader[6] = 0;
+	bmpFileHeader[7] = 0;
+	bmpFileHeader[8] = 0;
+	bmpFileHeader[9] = 0;
+	bmpFileHeader[10] = offsetToPixels & 0xFF;
+	bmpFileHeader[11] = (offsetToPixels >> 8) & 0xFF;
+	bmpFileHeader[12] = (offsetToPixels >> 16) & 0xFF;
+	bmpFileHeader[13] = (offsetToPixels >> 24) & 0xFF;
+
+	/* BMP Info Header - 40 bytes */
+	unsigned char bmpInfoHeader[40];
+	bmpInfoHeader[0] = 40; bmpInfoHeader[1] = 0; bmpInfoHeader[2] = 0; bmpInfoHeader[3] = 0;
+	bmpInfoHeader[4] = width & 0xFF; bmpInfoHeader[5] = (width >> 8) & 0xFF; bmpInfoHeader[6] = 0; bmpInfoHeader[7] = 0;
+	bmpInfoHeader[8] = height & 0xFF; bmpInfoHeader[9] = (height >> 8) & 0xFF; bmpInfoHeader[10] = 0; bmpInfoHeader[11] = 0;
+	bmpInfoHeader[12] = 1; bmpInfoHeader[13] = 0;
+	bmpInfoHeader[14] = 8; bmpInfoHeader[15] = 0;
+	bmpInfoHeader[16] = 0; bmpInfoHeader[17] = 0; bmpInfoHeader[18] = 0; bmpInfoHeader[19] = 0;
+	bmpInfoHeader[20] = 0; bmpInfoHeader[21] = 0; bmpInfoHeader[22] = 0; bmpInfoHeader[23] = 0;
+	bmpInfoHeader[24] = 0; bmpInfoHeader[25] = 0; bmpInfoHeader[26] = 0; bmpInfoHeader[27] = 0;
+	bmpInfoHeader[28] = 0; bmpInfoHeader[29] = 0; bmpInfoHeader[30] = 0; bmpInfoHeader[31] = 0;
+	bmpInfoHeader[32] = 256 & 0xFF; bmpInfoHeader[33] = (256 >> 8) & 0xFF; bmpInfoHeader[34] = 0; bmpInfoHeader[35] = 0;
+	bmpInfoHeader[36] = 256 & 0xFF; bmpInfoHeader[37] = (256 >> 8) & 0xFF; bmpInfoHeader[38] = 0; bmpInfoHeader[39] = 0;
+
+#ifdef WINDOWS
+	fwrite(bmpFileHeader, 1, 14, fp);
+	fwrite(bmpInfoHeader, 1, 40, fp);
+	fwrite(palette, 1, 256 * 4, fp);
+	for (row = height - 1; row >= 0; row--)
+		fwrite(pixels + row * width, 1, width, fp);
+	fclose(fp);
+#else
+	_write(fp, bmpFileHeader, 14);
+	_write(fp, bmpInfoHeader, 40);
+	_write(fp, palette, 256 * 4);
+	for (row = height - 1; row >= 0; row--)
+		_write(fp, pixels + row * width, width);
+	_close(fp);
+#endif
+
+	printf("Saved to %s\n", filename);
+}
+
 void dump_planet_texture(double star_x, double star_y, double star_z, int body_index)
 {
 	char filename[64];
-	int row;
 	double star_id;
 
 	srand ((long)(star_x/100000*star_y/100000*star_z/100000));
@@ -138,87 +204,9 @@ void dump_planet_texture(double star_x, double star_y, double star_z, int body_i
 	read_vga_palette(vga_palette);
 
 	/* Build BMP palette from captured VGA palette */
-	unsigned char bmp_palette[256 * 4];
-	for (int i = 0; i < 256; i++) {
-		bmp_palette[i * 4 + 2] = vga_palette[i * 3 + 0]; /* Red */
-		bmp_palette[i * 4 + 1] = vga_palette[i * 3 + 1]; /* Green */
-		bmp_palette[i * 4 + 0] = vga_palette[i * 3 + 2]; /* Blue */
-		bmp_palette[i * 4 + 3] = 0;
-	}
-
-	/* Wind up time so clouds are distributed around the planet */
-	getsecs();
-
-	printf("Generating surface texture...\n");
-	no_atmosphere = 1;
-	no_terminator = 1;
-	surface(body_index, nearstar_p_type[body_index], seedval, 255);
-	no_atmosphere = 0;
-	no_terminator = 0;
-
-	sprintf(filename, "PLANET.BMP");
-	printf("Saving to %s...\n", filename);
-
-#ifdef WINDOWS
-	FILE *fp = fopen(filename, "wb");
-#else
-	int fp = _creat(filename, 0);
-#endif
-	if (fp == -1) {
-		printf("Error: Cannot create file %s\n", filename);
-		return;
-	}
-
-	/* BMP File Header - 14 bytes */
-	unsigned char bmpFileHeader[14];
-	unsigned int fileSize = 14 + 40 + 256*4 + 360*120;
-	unsigned int offsetToPixels = 14 + 40 + 256*4;
-	bmpFileHeader[0] = 'B';
-	bmpFileHeader[1] = 'M';
-	bmpFileHeader[2] = fileSize & 0xFF;
-	bmpFileHeader[3] = (fileSize >> 8) & 0xFF;
-	bmpFileHeader[4] = (fileSize >> 16) & 0xFF;
-	bmpFileHeader[5] = (fileSize >> 24) & 0xFF;
-	bmpFileHeader[6] = 0;
-	bmpFileHeader[7] = 0;
-	bmpFileHeader[8] = 0;
-	bmpFileHeader[9] = 0;
-	bmpFileHeader[10] = offsetToPixels & 0xFF;
-	bmpFileHeader[11] = (offsetToPixels >> 8) & 0xFF;
-	bmpFileHeader[12] = (offsetToPixels >> 16) & 0xFF;
-	bmpFileHeader[13] = (offsetToPixels >> 24) & 0xFF;
-
-	/* BMP Info Header - 40 bytes */
-	unsigned char bmpInfoHeader[40];
-	bmpInfoHeader[0] = 40; bmpInfoHeader[1] = 0; bmpInfoHeader[2] = 0; bmpInfoHeader[3] = 0;
-	bmpInfoHeader[4] = 360 & 0xFF; bmpInfoHeader[5] = (360 >> 8) & 0xFF; bmpInfoHeader[6] = 0; bmpInfoHeader[7] = 0;
-	bmpInfoHeader[8] = 120 & 0xFF; bmpInfoHeader[9] = (120 >> 8) & 0xFF; bmpInfoHeader[10] = 0; bmpInfoHeader[11] = 0;
-	bmpInfoHeader[12] = 1; bmpInfoHeader[13] = 0;
-	bmpInfoHeader[14] = 8; bmpInfoHeader[15] = 0;
-	bmpInfoHeader[16] = 0; bmpInfoHeader[17] = 0; bmpInfoHeader[18] = 0; bmpInfoHeader[19] = 0;
-	bmpInfoHeader[20] = 0; bmpInfoHeader[21] = 0; bmpInfoHeader[22] = 0; bmpInfoHeader[23] = 0;
-	bmpInfoHeader[24] = 0; bmpInfoHeader[25] = 0; bmpInfoHeader[26] = 0; bmpInfoHeader[27] = 0;
-	bmpInfoHeader[28] = 0; bmpInfoHeader[29] = 0; bmpInfoHeader[30] = 0; bmpInfoHeader[31] = 0;
-	bmpInfoHeader[32] = 256 & 0xFF; bmpInfoHeader[33] = (256 >> 8) & 0xFF; bmpInfoHeader[34] = 0; bmpInfoHeader[35] = 0;
-	bmpInfoHeader[36] = 256 & 0xFF; bmpInfoHeader[37] = (256 >> 8) & 0xFF; bmpInfoHeader[38] = 0; bmpInfoHeader[39] = 0;
-
-#ifdef WINDOWS
-	fwrite(bmpFileHeader, 1, 14, fp);
-	fwrite(bmpInfoHeader, 1, 40, fp);
-#else
-	_write(fp, bmpFileHeader, 14);
-	_write(fp, bmpInfoHeader, 40);
-#endif
-
 	unsigned char palette[256 * 4];
-
-	int palette_offset;
-	if (nearstar_p_owner[body_index] > -1)
-		palette_offset = 128;  /* moon */
-	else
-		palette_offset = 192;  /* planet */
-
-	for (i = 0; i < 256; i++) {
+	int palette_offset = (nearstar_p_owner[body_index] > -1) ? 128 : 192;
+	for (int i = 0; i < 256; i++) {
 		int src = (palette_offset + i) % 256;
 		palette[i * 4 + 2] = vga_palette[src * 3 + 0]; /* Red */
 		palette[i * 4 + 1] = vga_palette[src * 3 + 1]; /* Green */
@@ -226,18 +214,36 @@ void dump_planet_texture(double star_x, double star_y, double star_z, int body_i
 		palette[i * 4 + 3] = 0;
 	}
 
-#ifdef WINDOWS
-	fwrite(palette, 1, 256 * 4, fp);
-	for (row = 119; row >= 0; row--)
-    	fwrite(fp, p_background + row * 360, 360);
-	fclose(fp);
-#else
-	_write(fp, palette, 256 * 4);
-	for (row = 119; row >= 0; row--)
-    	_write(fp, p_background + row * 360, 360);
-	_close(fp);
-#endif
+	/* Wind up time so clouds are distributed around the planet */
+	getsecs();
 
+	printf("Generating surface textures...\n");
+
+	no_atmosphere = 1;
+	no_terminator = 1;
+	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+	no_atmosphere = 0;
+	no_terminator = 0;
+
+	sprintf(filename, "P_SURFAC.BMP");
+	save_bmp(filename, p_background, 360, 120, palette);
+
+	no_atmosphere = 0;
+	no_terminator = 1;
+	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+	no_atmosphere = 0;
+	no_terminator = 0;
+
+	sprintf(filename, "P_WCLOUD.BMP");
+	save_bmp(filename, p_background, 360, 120, palette);
+
+	no_atmosphere = 0;
+	no_terminator = 0;
+	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+
+	sprintf(filename, "PLANET.BMP");
+	save_bmp(filename, p_background, 360, 120, palette);
+	
 	/* Return to text mode */
 	_80_25_C();
 	
