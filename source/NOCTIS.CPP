@@ -137,9 +137,6 @@ void dump_planet_texture(double star_x, double star_y, double star_z, int body_i
 	unsigned char vga_palette[256 * 3];
 	read_vga_palette(vga_palette);
 
-	/* Generate surface texture into p_background */
-	surface(body_index, nearstar_p_type[body_index], seedval, 255);
-
 	/* Build BMP palette from captured VGA palette */
 	unsigned char bmp_palette[256 * 4];
 	for (int i = 0; i < 256; i++) {
@@ -149,7 +146,8 @@ void dump_planet_texture(double star_x, double star_y, double star_z, int body_i
 		bmp_palette[i * 4 + 3] = 0;
 	}
 
-
+	/* Wind up time so clouds are distributed around the planet */
+	getsecs();
 
 	printf("Generating surface texture...\n");
 	surface(body_index, nearstar_p_type[body_index], seedval, 255);
