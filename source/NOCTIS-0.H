@@ -443,6 +443,8 @@ extern void planet_xyz (int n);
 extern float rtp (int n);
 extern int planet_viewpoint (double obs_x, double obs_z);
 extern void surface (int logical_id, int type, double seedval, unsigned char colorbase);
+extern char no_atmosphere;
+extern char no_terminator;
 extern int nightzone, crepzone, sun_x_factor;
 extern void planets (void);
 extern void ring (void);

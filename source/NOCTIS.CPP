@@ -150,7 +150,11 @@ void dump_planet_texture(double star_x, double star_y, double star_z, int body_i
 	getsecs();
 
 	printf("Generating surface texture...\n");
+	no_atmosphere = 1;
+	no_terminator = 1;
 	surface(body_index, nearstar_p_type[body_index], seedval, 255);
+	no_atmosphere = 0;
+	no_terminator = 0;
 
 	sprintf(filename, "PLANET.BMP");
 	printf("Saving to %s...\n", filename);

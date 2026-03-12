@@ -4755,6 +4755,9 @@ void storm () // tempesta (una grande macchia chiara sull'atmosfera).
 	}
 }
 
+char no_atmosphere = 0;  /* set to 1 to skip cloud overlay */
+char no_terminator = 0;  /* set to 1 to skip day/night overlay */
+
 /* Calcola la superficie estrapolandola dai dati sul pianeta e dalla
    tabella pseudo-casuale assegnatagli.
    Include il terminatore giorno-notte scurendo l'emisfero notturno
@@ -5084,11 +5087,13 @@ rndpat:	asm {   add ax, cx
 	   e rinormalizzazione della mappa del terreno
 	   in modo che si adatti al range da 0 a 1Fh. */
 
-	for (px = 0, py = 0; px < 32400; py += 2, px++) {
-		p_background[py] += overlay[px];
-		if (p_background[py] > 0x3E) p_background[py] = 0x3E;
-		p_background[py+1] += overlay[px];
-		if (p_background[py+1] > 0x3E) p_background[py+1] = 0x3E;
+	if (!no_atmosphere) {
+		for (px = 0, py = 0; px < 32400; py += 2, px++) {
+			p_background[py] += overlay[px];
+			if (p_background[py] > 0x3E) p_background[py] = 0x3E;
+			p_background[py+1] += overlay[px];
+			if (p_background[py+1] > 0x3E) p_background[py+1] = 0x3E;
+		}
 	}
 
 	/* ritocchi specifici finali alla superficie - pianeti venusiani */
@@ -5102,25 +5107,27 @@ rndpat:	asm {   add ax, cx
 
 	/* applicazione terminatore giorno-notte */
 
-	nearstar_p_term_start[logical_id] = plwp + 35;
-	if (nearstar_p_term_start[logical_id] >= 360) nearstar_p_term_start[logical_id] -= 360;
-	nearstar_p_term_end[logical_id] = nearstar_p_term_start[logical_id] + 130;
-	if (nearstar_p_term_end[logical_id] >= 360) nearstar_p_term_end[logical_id] -= 360;
+	if (!no_terminator) {
+		nearstar_p_term_start[logical_id] = plwp + 35;
+		if (nearstar_p_term_start[logical_id] >= 360) nearstar_p_term_start[logical_id] -= 360;
+		nearstar_p_term_end[logical_id] = nearstar_p_term_start[logical_id] + 130;
+		if (nearstar_p_term_end[logical_id] >= 360) nearstar_p_term_end[logical_id] -= 360;
 
-		asm {	les di, dword ptr p_background
-			add di, plwp
-			add di, 35
-			mov cx, 179 }
-      darkside:	asm {   push cx
-			mov cx, 130 }
-      darkline: asm {	shr byte ptr es:[di], 2
-			inc di
-			dec cx
-			jnz darkline
-			pop cx
-			add di, 230
-			dec cx
-			jnz darkside }
+			asm {	les di, dword ptr p_background
+				add di, plwp
+				add di, 35
+				mov cx, 179 }
+		darkside:	asm {   push cx
+				mov cx, 130 }
+		darkline: asm {	shr byte ptr es:[di], 2
+				inc di
+				dec cx
+				jnz darkline
+				pop cx
+				add di, 230
+				dec cx
+				jnz darkside }
+	}
 
 	/* ritocchi specifici finali alla superficie - altri pianeti */
 
