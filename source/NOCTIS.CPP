@@ -461,6 +461,7 @@ void freeze ()
 	WRITEFILE (fh, &roofspeed, sizeof(roofspeed));
 	WRITEFILE (fh, &hud_closed, sizeof(hud_closed));
     WRITEFILE (fh, &draw_hud, sizeof(draw_hud));
+    WRITEFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
 	_close (fh);
 }
 
@@ -2000,6 +2001,7 @@ void unfreeze ()
 		READFILE (fh, &roofspeed, sizeof(roofspeed));
         READFILE (fh, &hud_closed, sizeof(hud_closed));
         READFILE (fh, &draw_hud, sizeof(draw_hud));
+        READFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
 		strcpy(fcs_status_extended, fcs_status_extended);
 		_close (fh);
         
