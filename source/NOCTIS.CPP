@@ -462,6 +462,7 @@ void freeze ()
 	WRITEFILE (fh, &hud_closed, sizeof(hud_closed));
     WRITEFILE (fh, &draw_hud, sizeof(draw_hud));
     WRITEFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
+    WRITEFILE (fh, &seamless_border, sizeof(seamless_border));
 	_close (fh);
 }
 
@@ -1198,6 +1199,7 @@ char hud_closed = 1;
 // Variables for graphical tweaks (nimaid)
 char draw_hud = 1;
 char lens_flare_mode = 0;
+char seamless_border = 0;
 char graphics_menu_status = 0;
 
 unsigned char far * ctrlkeys     = (unsigned char far *) 0x00000417;
@@ -2002,6 +2004,7 @@ void unfreeze ()
         READFILE (fh, &hud_closed, sizeof(hud_closed));
         READFILE (fh, &draw_hud, sizeof(draw_hud));
         READFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
+        READFILE (fh, &seamless_border, sizeof(seamless_border));
 		strcpy(fcs_status_extended, fcs_status_extended);
 		_close (fh);
         
