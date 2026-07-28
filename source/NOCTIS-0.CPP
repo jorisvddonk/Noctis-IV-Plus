@@ -6291,7 +6291,7 @@ int movieexists;
 char snapfilename[24];
 void snapshot (int forcenumber, char showdata)
 {
-    	long prog;
+    long prog;
 	unsigned pqw;
 	double parsis_x, parsis_y, parsis_z;
 
@@ -6355,47 +6355,59 @@ void snapshot (int forcenumber, char showdata)
 		sprintf (snapfilename, "..\\GALLERY\\WIDE%04d.BMP", forcenumber);	//Panoramic snapshots no longer overwrite pictures 9997-9999 if those happened to exist. (SL)
 
     if (showdata) {
-	areaclear (adapted, 2, 191, 0, 0, 316, 7, 64 + 63);
+        areaclear (adapted, 2, 191, 0, 0, 316, 7, 64 + 63);
 
-	asm {	fld dzat_x
-		frndint
-		fstp parsis_x
-		fld dzat_y
-		frndint
-		fstp parsis_y
-		fld dzat_z
-		frndint
-		fstp parsis_z }
+        asm {	fld dzat_x
+            frndint
+            fstp parsis_x
+            fld dzat_y
+            frndint
+            fstp parsis_y
+            fld dzat_z
+            frndint
+            fstp parsis_z }
 
-	strcpy (outhudbuffer, "LOCATION PARSIS: ");
-	strcat (outhudbuffer, alphavalue(parsis_x));
-	strcat (outhudbuffer, ";");
-	strcat (outhudbuffer, alphavalue(-parsis_y));
-	strcat (outhudbuffer, ";");
-	strcat (outhudbuffer, alphavalue(parsis_z));
-	if (ip_targetted > -1) {
-		if (nearstar_p_owner[ip_targetted] > -1) {
-			strcat (outhudbuffer, " & TGT: MOON N@");
-			strcat (outhudbuffer, alphavalue(nearstar_p_moonid[ip_targetted]+1));
-			strcat (outhudbuffer, " OF PLANET N@");
-			strcat (outhudbuffer, alphavalue(nearstar_p_owner[ip_targetted]+1));
-		}
-		else {
-			strcat (outhudbuffer, " & TGT: PLANET N@");
-			strcat (outhudbuffer, alphavalue(ip_targetted+1));
-		}
-	}
-	wrouthud (3, 192, NULL, outhudbuffer);
+        strcpy (outhudbuffer, "LOCATION PARSIS: ");
+        strcat (outhudbuffer, alphavalue(parsis_x));
+        strcat (outhudbuffer, ";");
+        strcat (outhudbuffer, alphavalue(-parsis_y));
+        strcat (outhudbuffer, ";");
+        strcat (outhudbuffer, alphavalue(parsis_z));
+        if (ip_targetted > -1) {
+            if (nearstar_p_owner[ip_targetted] > -1) {
+                strcat (outhudbuffer, " & TGT: MOON N@");
+                strcat (outhudbuffer, alphavalue(nearstar_p_moonid[ip_targetted]+1));
+                strcat (outhudbuffer, " OF PLANET N@");
+                strcat (outhudbuffer, alphavalue(nearstar_p_owner[ip_targetted]+1));
+            }
+            else {
+                strcat (outhudbuffer, " & TGT: PLANET N@");
+                strcat (outhudbuffer, alphavalue(ip_targetted+1));
+            }
+        }
+        wrouthud (3, 192, NULL, outhudbuffer);
 
-	if (ap_targetted == 1 && star_label_pos != -1) {
-		areaclear (adapted, 14, 14, 0, 0, 102, 7, 64 + 63);
-		wrouthud (15, 15, 20, star_label);
-	}
+        if (ap_targetted == 1 && star_label_pos != -1) {
+            if (draw_hud == 1) {
+                areaclear (adapted, 14, 14, 0, 0, 102, 7, 64 + 63);
+                wrouthud (15, 15, 20, star_label);
+            }
+            else {
+                areaclear (adapted, 2, 2, 0, 0, 102, 7, 64 + 63);
+                wrouthud (3, 3, 20, star_label);
+            }
+        }
 
-	if (ip_targetted != -1 && planet_label_pos != -1) {
-		areaclear (adapted, 14, 23, 0, 0, 102, 7, 64 + 63);
-		wrouthud (15, 24, 20, planet_label);
-	}
+        if (ip_targetted != -1 && planet_label_pos != -1) {
+            if (draw_hud == 1) {
+                areaclear (adapted, 14, 23, 0, 0, 102, 7, 64 + 63);
+                wrouthud (15, 24, 20, planet_label);
+            }
+            else {
+                areaclear (adapted, 2, 11, 0, 0, 102, 7, 64 + 63);
+                wrouthud (3, 12, 20, planet_label);
+            }
+        }
     }
 
 	ih = _creat (snapfilename, 0);
