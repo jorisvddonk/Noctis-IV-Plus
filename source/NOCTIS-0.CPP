@@ -6110,8 +6110,14 @@ float	tp_temp = 22, pp_temp = 22;
 float	tp_pressure = 1, pp_pressure = 1;
 float	tp_pulse = 118, pp_pulse = 118;
 
+// Variables for HUD toggle (nimaid)
+extern char about;
+char taking_snapshot = 0;
+
 void wrouthud (unsigned x, unsigned y, unsigned l, char *text)
 {
+    if (draw_hud == 0 && about == 0 && taking_snapshot == 0 && moviestat == 0 && graphics_menu_status == 0) goto skip_draw_text;
+    
 	int j, i, n;
 	unsigned spot;
 
@@ -6130,6 +6136,8 @@ void wrouthud (unsigned x, unsigned y, unsigned l, char *text)
 		spot += 4;
 		n++;
 	}
+    
+    skip_draw_text:
 }
 
 char blinkhudlights;
@@ -6146,7 +6154,9 @@ void surrounding (char compass_on, int openhudcount_in)
 	long	lsecs, lptr;
 	float	pp_delta, ccom;
 
-    for (lptr=0; lptr<04; lptr++) areaclear (adapted, 10, openhudcount_in + 9 - lptr, 0, 0, 300, 1, 54 + surlight + 3*lptr);
+	if (draw_hud == 1) {
+        for (lptr=0; lptr<04; lptr++) areaclear (adapted, 10, openhudcount_in + 9 - lptr, 0, 0, 300, 1, 54 + surlight + 3*lptr);
+    }
 	for (lptr=0; lptr<10; lptr++) areaclear (adapted, 0, 9 - lptr, 0, 0, 320, 1, 64 + surlight - lptr);
 	for (lptr=0; lptr<10; lptr++) areaclear (adapted, 0, 190 + lptr, 0, 0, 320, 1, 64 + surlight - lptr);
 	for (lptr=0; lptr<10; lptr++) areaclear (adapted, 9 - lptr, 10, 0, 0, 1, 180, 64 + surlight - lptr);
@@ -6157,6 +6167,7 @@ void surrounding (char compass_on, int openhudcount_in)
 
 //Turn on (and make a bit larger) those lights. Blinkhudlights turns them on, and Blinkhudlights_stay
 //makes them either turn off again, or stay on until Blinkhudlights is set to 0 again.
+    if (draw_hud == 0) goto no_hud_lights;
 	if (blinkhudlights == 1) {
 		if (lptr <= 111)
 		lptr = 127;
@@ -6193,6 +6204,7 @@ void surrounding (char compass_on, int openhudcount_in)
 		areaclear (adapted, 308, 188, 0, 0, 4, 4, lptr);
 		smootharound_64 (adapted, 308, 188, 5, 1);
 	}
+    no_hud_lights:
 
 	sprintf (outhudbuffer, "EPOC %d & ", epoc);
 	lsecs = secs; lsecs -= lsecs % 1000000L; lsecs /= 1000000L; lsecs%=1000;
@@ -6279,6 +6291,8 @@ void snapshot (int forcenumber, char showdata)
 
 	unsigned ptr, c;
 	char a, b, t[54];
+    
+    taking_snapshot = 1;
 
 	int ih = sa_open (header_bmp);
 	if (ih==-1) return;
@@ -6391,6 +6405,8 @@ void snapshot (int forcenumber, char showdata)
 		for (ptr=63680; ptr<64000; ptr-=320) _write (ih, adapted+ptr, 320);
 		_close (ih);
 	}
+    
+    taking_snapshot = 0;
 }
 
 /*

@@ -3705,7 +3705,7 @@ void planetary_main ()
 	setup_animals ();
 
 /* inizio del ciclo d'esplorazione. */
-	char moviestat = 0;
+	moviestat = 0;
 	int	bounces = 0;
 	int	resolve = 1;
 	float	fixed_step = 0;
@@ -4506,7 +4506,7 @@ void planetary_main ()
 		// subito dopo che si � stati bagnati da un'onda...
 	  ends: 
 	  	// trying to have status on surface working (neuzd)
-	  	if (fcs_status_delay>0) {
+	  	if (fcs_status_delay>0 && draw_hud == 1) {
 			int len = strlen(fcs_status_extended);
 			len = len+len;
 			wrouthud(160-len, 100, NULL, fcs_status_extended);
@@ -4538,7 +4538,12 @@ void planetary_main ()
 		}
 		
 		// il fotogramma � finito. ora lo visualizza.
-		surrounding (1, openhudcount);
+        if (draw_hud == 1) {
+            surrounding (1, openhudcount);
+        }
+        else {
+            surrounding (0, openhudcount);
+        }
 		QUADWORDS = 16000;
 		if (!widesnapping) pcopy (adaptor, adapted);
 		QUADWORDS = pqw;
