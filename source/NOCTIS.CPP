@@ -460,6 +460,9 @@ void freeze ()
 	WRITEFILE (fh, &option_mouseLook, sizeof(option_mouseLook));				//40
 	WRITEFILE (fh, &roofspeed, sizeof(roofspeed));
 	WRITEFILE (fh, &hud_closed, sizeof(hud_closed));
+    WRITEFILE (fh, &draw_hud, sizeof(draw_hud));
+    WRITEFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
+    WRITEFILE (fh, &seamless_border, sizeof(seamless_border));
 	_close (fh);
 }
 
@@ -1188,11 +1191,16 @@ int moviepaused=0;
 
 char about = 0;
 
+// Variables for visor animation (nimaid)
 int	openhudcount = 180;
 int	openhuddelta = 0;
 char hud_closed = 1;
 
+// Variables for graphical tweaks (nimaid)
+char draw_hud = 1;
 char lens_flare_mode = 0;
+char seamless_border = 0;
+char graphics_menu_status = 0;
 
 unsigned char far * ctrlkeys     = (unsigned char far *) 0x00000417;
 
@@ -1994,6 +2002,9 @@ void unfreeze ()
 		READFILE (fh, &option_mouseLook, sizeof(option_mouseLook));				//40
 		READFILE (fh, &roofspeed, sizeof(roofspeed));
         READFILE (fh, &hud_closed, sizeof(hud_closed));
+        READFILE (fh, &draw_hud, sizeof(draw_hud));
+        READFILE (fh, &lens_flare_mode, sizeof(lens_flare_mode));
+        READFILE (fh, &seamless_border, sizeof(seamless_border));
 		strcpy(fcs_status_extended, fcs_status_extended);
 		_close (fh);
         
@@ -2810,7 +2821,7 @@ void main ()
 		// Fornisce informazioni sullo strato esterno dell'H.U.D.
 		// Qualsiasi glifo verr� in seguito trattato con dithering.
 		//
-		if (active_screen != -1) goto nohud_1;
+		if (active_screen != -1 || draw_hud != 1) goto nohud_1;
 		//
 		// Informazioni e schemi addizionali sull'H.U.D.
 		// Tracciamento label della stella selezionata.
@@ -2890,12 +2901,14 @@ void main ()
 		//
        nohud_1: alfa = 0; beta = 0; change_angle_of_view ();
 		cam_x = -512; cam_y = -275; cam_z = -750;
-		c = strlen(fcs_status_extended) - 1;
-		while (c >= 0) {
-			digit_at (fcs_status_extended[c], -6, -15, 6, 120, 1);
-			cam_x += 45;
-			c--;
-		}
+        if (draw_hud == 1 || graphics_menu_status == 1 || moviestat == 1) {
+            c = strlen(fcs_status_extended) - 1;
+            while (c >= 0) {
+                digit_at (fcs_status_extended[c], -6, -15, 6, 120, 1);
+                cam_x += 45;
+                c--;
+            }
+        }
 		//
 		// Link alla funzione di ricerca dei targets in real-time.
 		//
@@ -3263,6 +3276,9 @@ void main ()
 				if (moviestat) {
 					status ("MOVIEMAKER", 0);
 				}
+                else if (graphics_menu_status == 1) {
+                    status ("VFX MENU", 0);
+                }
 				else {
 					status ("TRACKING", 0);
 				}
@@ -3938,11 +3954,24 @@ void main ()
 					if (about == 0){
 						about = 1;
 						moviestat = 0;
+                        graphics_menu_status = 0;
 					}
 					else {
 						about = 0;
 					}
 				}
+                if (c==0x3C) { // F2 - Graphics menu toggle
+                    if (graphics_menu_status == 0) {
+                        graphics_menu_status = 1;
+                        moviestat = 0;
+                        about = 0;
+                        status("VFXMENU ON",100);
+                    }
+                    else {
+                        graphics_menu_status = 0;
+                        status("VFXMENU OFF",100);
+                    }
+                }
                 if (c == 0x49) { // Page Up - Open visor
 					openhuddelta = -5;
 					hud_closed = 0;
@@ -3953,6 +3982,7 @@ void main ()
 				if (c==0x3D){								// f3 - moviestat
 					if (moviestat == 0){
 						moviestat = 1;
+                        graphics_menu_status = 0;
 						
 						char tempsnapfile[24];
 						if (movieexists == 0)
@@ -4097,9 +4127,21 @@ void main ()
 					snapshot (0, 1);
 					goto endmain;
 				}
-				if (c=='b' && !(labstar || labplanet) ) {
-					snapshot (0, 0);
-					goto endmain;
+				if (c=='b') {
+                    if (graphics_menu_status == 1) {
+                        if (seamless_border == 0) {
+                            seamless_border = 1;
+                            status("SEAMLESS BD.", 100);
+                        }
+                        else {
+                            seamless_border = 0;
+                            status("DEFAULT BD.", 100);
+                        }
+                    }
+                    else if (!(labstar || labplanet)) {
+                        snapshot (0, 0);
+                        goto endmain;
+                    }
 				}
 				if (c=='+' && moviestat && moviefsec < 999 && !movie)
 				{
@@ -4138,17 +4180,33 @@ void main ()
 	                    }
                 	}
 				}
-				if (c=='f' && moviestat && !movie) {
-					if (movieflashoff == 1)
-					{
-						movieflashoff = 0;
-						status("BLK FLASH", 100);
-					}
-					else
-					{
-						movieflashoff = 1;
-						status("NO FLASH", 100);
-					}
+				if (c=='f') {
+                    if (graphics_menu_status == 1) {
+                        if (lens_flare_mode == 0) {
+                            lens_flare_mode = 1;
+                            status("FLARES ON", 100);
+                        }
+                        else if (lens_flare_mode == 1) {
+                            lens_flare_mode = -1;
+                            status("FLARES OFF", 100);
+                        }
+                        else {
+                            lens_flare_mode = 0;
+                            status("VISOR FLARES", 100);
+                        }
+                    }
+					else if (moviestat && !movie) {
+                        if (movieflashoff == 1)
+                        {
+                            movieflashoff = 0;
+                            status("BLK FLASH", 100);
+                        }
+                        else
+                        {
+                            movieflashoff = 1;
+                            status("NO FLASH", 100);
+                        }
+                    }
 				}
 				if (c=='s' && !(labstar || labplanet))
 				{
@@ -4164,6 +4222,16 @@ void main ()
 					}
 					
 				}
+                if ((c == 't') && (graphics_menu_status==1)) {
+                    if (draw_hud == 0) {
+                        draw_hud = 1;
+                        status("TEXT ON", 100);
+                    }
+                    else {
+                        draw_hud = 0;
+                        status("TEXT OFF", 100);
+                    }
+                }
 				// Added a pause feature when filming a movie (neuzd)
 				if (c == 'p' && !(labstar || labplanet))
 				{
@@ -4433,20 +4501,20 @@ void ShowAboutPage(char surface) {
 	areaclear (adapted, 11, 35, 310, 44, 0, 0, 72);
 	areaclear (adapted, 11, 45, 310, 168, 0, 0, 112);
 	if (surface) {
-		wrouthud (14, 37, NULL, "SURFACE SHORTCUT KEYS:");
-		wrouthud (14,53, NULL,  "0-9 - MOVEMENT SPEED");
-		wrouthud (14,59, NULL,  "J - JUMP                                    L - LAND ON SURFACE");
-		wrouthud (14,65, NULL,  "SPACE - JETPACK                             C - DISENGAGE JETPACK CONTROL");
-		wrouthud (14,71, NULL,  "M OR ASTERISK - SNAPSHOT                    N OR / - WIDE SNAPSHOT");
-		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT");
-		wrouthud (14,83, NULL,  "F3 - MOVIEMAKER");
-		wrouthud (14,89, NULL,  "DOWN ARROW - TOGGLE MOUSELOOK");
+		wrouthud (14, 37, NULL, "SHORTCUT KEYS (WHEN ON THE SURFACE):");
+		wrouthud (14,53, NULL,  "0-9 - MOVEMENT SPEED                      LEFT CLICK - WALK FORWARD");
+		wrouthud (14,59, NULL,  "J - JUMP                                  L - LAND ON SURFACE");
+		wrouthud (14,65, NULL,  "SPACE - JETPACK                           C - DISENGAGE JETPACK CONTROL");
+		wrouthud (14,71, NULL,  "M OR ASTERISK - SNAPSHOT                  N OR / - WIDE SNAPSHOT");
+		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT                V OR PERIOD - RAW WIDE SNAPSHOT");
+		wrouthud (14,83, NULL,  "F3 - MOVIEMAKER                           F2 - VISUAL EFFECTS SETTINGS");
+		wrouthud (14,89, NULL,  "DOWN ARROW - TOGGLE MOUSELOOK             PLUS AND MINUS - HUD BRIGHTNESS");
 	} else {
 		wrouthud (14, 37, NULL, "SHORTCUT KEYS (WHEN IN SPACE):");
-		wrouthud (14, 53, NULL, "M OR ASTERISK - SNAPSHOT                    B - RAW SNAPSHOT");
-		wrouthud (14, 59, NULL, "F3 - MOVIEMAKER");
-		wrouthud (14, 71, NULL, "S - TOGGLE ROOFSPEED");
-        wrouthud (14, 77, NULL, "DOWN ARROW - TOGGLE MOUSELOOK");
+		wrouthud (14, 53, NULL, "M OR ASTERISK - SNAPSHOT                  B - RAW SNAPSHOT");
+		wrouthud (14, 59, NULL, "F3 - MOVIEMAKER                           F2 - VISUAL EFFECTS SETTINGS");
+		wrouthud (14, 65, NULL, "S - TOGGLE ROOFSPEED                      UP ARROW - EXIT TO ROOF");
+        wrouthud (14, 71, NULL, "DOWN ARROW - TOGGLE MOUSELOOK             PLUS AND MINUS - HUD BRIGHTNESS");
 	}
 	areaclear (adapted, 11, 178, 310, 188, 0, 0, 72);
 	if (charge<0) {

@@ -3705,7 +3705,7 @@ void planetary_main ()
 	setup_animals ();
 
 /* inizio del ciclo d'esplorazione. */
-	char moviestat = 0;
+	moviestat = 0;
 	int	bounces = 0;
 	int	resolve = 1;
 	float	fixed_step = 0;
@@ -4506,7 +4506,7 @@ void planetary_main ()
 		// subito dopo che si � stati bagnati da un'onda...
 	  ends: 
 	  	// trying to have status on surface working (neuzd)
-	  	if (fcs_status_delay>0) {
+	  	if (fcs_status_delay>0 && draw_hud == 1) {
 			int len = strlen(fcs_status_extended);
 			len = len+len;
 			wrouthud(160-len, 100, NULL, fcs_status_extended);
@@ -4532,13 +4532,49 @@ void planetary_main ()
 			ShowMovieSetup(moviefsec, movieflashoff, moviedeck);
 		}
 		CalculatemovieFPS(moviefscap, moviestime);
-
+        
+        if (graphics_menu_status == 1) { // F2 - Graphics Menu
+            areaclear (adapted, 13, 131, 175, 180, 0, 0, 72);
+            areaclear (adapted, 13, 138, 175, 139, 0, 0, 90);
+            
+            if (draw_hud == 1) {
+                wrouthud (14, 141, NULL, "HUD TEXT ON                          (T)");
+            }
+            else {
+                wrouthud (14, 141, NULL, "HUD TEXT OFF                         (T)");
+            }
+            
+            if (lens_flare_mode == 1) {
+                wrouthud (14, 148, NULL, "LENS FLARES ALWAYS ON                (F)");
+            }
+            else if (lens_flare_mode == -1) {
+                wrouthud (14, 148, NULL, "LENS FLARES ALWAYS OFF               (F)");
+            }
+            else {
+                wrouthud (14, 148, NULL, "VISOR LENS FLARES ONLY               (F)");
+            }
+            
+            if (seamless_border == 1) {
+                wrouthud (14, 155, NULL, "SEAMLESS BORDER                      (B)");
+            }
+            else {
+                wrouthud (14, 155, NULL, "DEFAULT BORDER                       (B)");
+            }
+            
+            wrouthud (14,132, NULL, "  NOCTIS IV+ VISUAL EFFECTS SETTINGS"); 				//The title. We do this at the end to allow colorings.
+        }
+        
 		if (about) {	// F1 - about
 			ShowAboutPage(1);
 		}
 		
 		// il fotogramma � finito. ora lo visualizza.
-		surrounding (1, openhudcount);
+        if (draw_hud == 1 || graphics_menu_status == 1 || moviestat == 1 || about == 1) {
+            surrounding (1, openhudcount);
+        }
+        else {
+            surrounding (0, openhudcount);
+        }
 		QUADWORDS = 16000;
 		if (!widesnapping) pcopy (adaptor, adapted);
 		QUADWORDS = pqw;
@@ -4737,15 +4773,27 @@ void planetary_main ()
 					if (moviestat == 0){
 						moviestat = 1;
 						about = 0;
+                        graphics_menu_status = 0;
 					}
 					else {
 						moviestat = 0;
 					}
 				}
+                if (w==0x3C) { // F2 - Graphics menu toggle
+                    if (graphics_menu_status == 0) {
+                        graphics_menu_status = 1;
+                        moviestat = 0;
+                        about = 0;
+                    }
+                    else {
+                        graphics_menu_status = 0;
+                    }
+                }
 				if (w==0x3B) { // F1 - help & about
 					if (about == 0){
 						about = 1;
 						moviestat = 0;
+                        graphics_menu_status = 0;
 					}
 					else {
 						about = 0;
@@ -4843,11 +4891,17 @@ void planetary_main ()
                                            movie_paused = 0;
                                           }
 				}
-				if (w=='f' && moviestat && !movie) {
-					if (movieflashoff == 1) movieflashoff = 0;
-					else movieflashoff = 1;
+				if (w=='f') {
+                    if (moviestat && !movie) {
+                        if (movieflashoff == 1) movieflashoff = 0;
+                        else movieflashoff = 1;
+                    }
+                    else if (graphics_menu_status) {
+                        if (lens_flare_mode == 0) lens_flare_mode = 1;
+                        else if (lens_flare_mode == 1) lens_flare_mode = -1;
+                        else lens_flare_mode = 0;
+                    }
 				}
-
 				if ((w == '*'  || w == 'm' ) && !widesnapping) {
 					dzat_x = backup_dzat_x;
 					dzat_y = backup_dzat_y;
@@ -4862,7 +4916,7 @@ void planetary_main ()
 					widesnapping = 1;
                     raw_widesnap = 0;
 				}
-                if ((w == 'v' || w == '+') && !widesnapping) {
+                if ((w == 'v' || w == '.') && !widesnapping) {
                     snapshot (9997, 0);
 					widesnapping = 1;
                     raw_widesnap = 1;
@@ -4875,9 +4929,17 @@ void planetary_main ()
 						fixed_step = (w * 10);
 					goto endtype;
 				}
-				if ((w == 'b') && widesnapping==0) {                // b - RAWSNAP (also 'delete')
-					snapshot (0, 0);
+				if (w == 'b') {
+                    if ((widesnapping==0) && (graphics_menu_status==0)) snapshot (0, 0); // b - RAWSNAP (also 'delete')
+					else if (graphics_menu_status==1) {
+                        if (seamless_border == 0) seamless_border = 1;
+                        else seamless_border = 0;
+                    }
 				}
+                if ((w == 't') && (graphics_menu_status==1)) {
+                    if (draw_hud == 0) draw_hud = 1;
+                    else draw_hud = 0;
+                }
 				if (w == 'c') {
 					jetpack = 0;
 				}

@@ -9,4 +9,8 @@ extern void ShowAboutPage(char surface);
 extern int openhudcount;
 extern int openhuddelta;
 extern char	hud_closed;
+extern char draw_hud;
 extern char lens_flare_mode;
+extern char seamless_border;
+extern char graphics_menu_status;
+extern char moviestat;
