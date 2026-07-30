@@ -4501,20 +4501,20 @@ void ShowAboutPage(char surface) {
 	areaclear (adapted, 11, 35, 310, 44, 0, 0, 72);
 	areaclear (adapted, 11, 45, 310, 168, 0, 0, 112);
 	if (surface) {
-		wrouthud (14, 37, NULL, "SURFACE SHORTCUT KEYS:");
-		wrouthud (14,53, NULL,  "0-9 - MOVEMENT SPEED");
-		wrouthud (14,59, NULL,  "J - JUMP                                    L - LAND ON SURFACE");
-		wrouthud (14,65, NULL,  "SPACE - JETPACK                             C - DISENGAGE JETPACK CONTROL");
-		wrouthud (14,71, NULL,  "M OR ASTERISK - SNAPSHOT                    N OR / - WIDE SNAPSHOT");
-		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT                  V OR . - RAW WIDE SNAPSHOT");
-		wrouthud (14,83, NULL,  "F3 - MOVIEMAKER                             F2 - VISUAL EFFECTS SETTINGS");
-		wrouthud (14,89, NULL,  "DOWN ARROW - TOGGLE MOUSELOOK");
+		wrouthud (14, 37, NULL, "SHORTCUT KEYS (WHEN ON THE SURFACE):");
+		wrouthud (14,53, NULL,  "0-9 - MOVEMENT SPEED                      LEFT CLICK - WALK FORWARD");
+		wrouthud (14,59, NULL,  "J - JUMP                                  L - LAND ON SURFACE");
+		wrouthud (14,65, NULL,  "SPACE - JETPACK                           C - DISENGAGE JETPACK CONTROL");
+		wrouthud (14,71, NULL,  "M OR ASTERISK - SNAPSHOT                  N OR / - WIDE SNAPSHOT");
+		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT                V OR PERIOD - RAW WIDE SNAPSHOT");
+		wrouthud (14,83, NULL,  "F3 - MOVIEMAKER                           F2 - VISUAL EFFECTS SETTINGS");
+		wrouthud (14,89, NULL,  "DOWN ARROW - TOGGLE MOUSELOOK             PLUS AND MINUS - HUD BRIGHTNESS");
 	} else {
 		wrouthud (14, 37, NULL, "SHORTCUT KEYS (WHEN IN SPACE):");
-		wrouthud (14, 53, NULL, "M OR ASTERISK - SNAPSHOT                    B - RAW SNAPSHOT");
-		wrouthud (14, 59, NULL, "F3 - MOVIEMAKER                             F2 - VISUAL EFFECTS SETTINGS");
-		wrouthud (14, 65, NULL, "S - TOGGLE ROOFSPEED");
-        wrouthud (14, 71, NULL, "DOWN ARROW - TOGGLE MOUSELOOK");
+		wrouthud (14, 53, NULL, "M OR ASTERISK - SNAPSHOT                  B - RAW SNAPSHOT");
+		wrouthud (14, 59, NULL, "F3 - MOVIEMAKER                           F2 - VISUAL EFFECTS SETTINGS");
+		wrouthud (14, 65, NULL, "S - TOGGLE ROOFSPEED                      UP ARROW - EXIT TO ROOF");
+        wrouthud (14, 71, NULL, "DOWN ARROW - TOGGLE MOUSELOOK             PLUS AND MINUS - HUD BRIGHTNESS");
 	}
 	areaclear (adapted, 11, 178, 310, 188, 0, 0, 72);
 	if (charge<0) {
