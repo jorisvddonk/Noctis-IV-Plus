@@ -4,7 +4,7 @@ This is the home of Noctis IV Plus, a basic modification of Alessandro Ghignola'
 
 ![](gallery/SAMPLE.BMP)
 
-For a list of changes, see [source/NIVPLUS_CHANGES.TXT](source/NIVPLUS_CHANGES.TXT)
+For a list of changes, see [source/docs/NIVPLUS_CHANGES.TXT](source/docs/NIVPLUS_CHANGES.TXT)
 
 For the manual, see [manual/noctis_iv_manual.html](manual/noctis_iv_manual.html)
 
@@ -20,7 +20,9 @@ Noctis IV was made for MS-DOS and early Windows versions that still supported 16
 
 The `Launch.bat` script lets you run Noctis IV Plus with a simple double-click on Windows systems. It expects DOSBox-X to either be installed in it's default location `C:\DOSBox-X\dosbox-x.exe`, or installed portably with it's `bin` folder placed in the main `Noctis-IV-Plus` folder.
 
-If you are using a system other than Windows, simply run the following command:
+The `Launch.bash` script lets you run Noctis IV Plus with a simple double-click on \*nix systems. It expects DOSBox-x to be installed via `snap`.
+
+If you are using a system other than Windows or Linux, simply run the following command:
 ```
 dosbox-x -c "mount n '<directory where NIVPlus is installed>'" -c "n:" -c "cd modules" -c "NOCTIS.EXE" -conf dosbox.conf -exit
 ```
@@ -42,4 +44,6 @@ To compile Noctis IV Plus, follow these steps:
 
 1. Get a working MS-DOS setup, as per the above.
 2. Install [Borland C++ 3.1 for DOS](https://archive.org/download/bcpp31/BCPP31.ZIP) to `Noctis-IV-Plus\bc.31`
-3. Double-click `source\Build.bat` to run the build script.
+3. Run the build command:
+  - Windows: Double-click `source\Build.bat`.
+  - \*nix: Double-click `source\Build.bash`.
