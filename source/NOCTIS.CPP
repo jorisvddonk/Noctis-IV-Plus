@@ -4506,7 +4506,7 @@ void ShowAboutPage(char surface) {
 		wrouthud (14,59, NULL,  "J - JUMP                                    L - LAND ON SURFACE");
 		wrouthud (14,65, NULL,  "SPACE - JETPACK                             C - DISENGAGE JETPACK CONTROL");
 		wrouthud (14,71, NULL,  "M OR ASTERISK - SNAPSHOT                    N OR / - WIDE SNAPSHOT");
-		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT                  V OR PLUS - RAW WIDE SNAPSHOT");
+		wrouthud (14,77, NULL,  "B OR DELETE - RAW SNAPSHOT                  V OR . - RAW WIDE SNAPSHOT");
 		wrouthud (14,83, NULL,  "F3 - MOVIEMAKER                             F2 - VISUAL EFFECTS SETTINGS");
 		wrouthud (14,89, NULL,  "DOWN ARROW - TOGGLE MOUSELOOK");
 	} else {

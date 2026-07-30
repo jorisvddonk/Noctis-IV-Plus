@@ -4916,7 +4916,7 @@ void planetary_main ()
 					widesnapping = 1;
                     raw_widesnap = 0;
 				}
-                if ((w == 'v' || w == '+') && !widesnapping) {
+                if ((w == 'v' || w == '.') && !widesnapping) {
                     snapshot (9997, 0);
 					widesnapping = 1;
                     raw_widesnap = 1;
