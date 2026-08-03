@@ -4,7 +4,7 @@ This is the home of Noctis IV Plus, a basic modification of Alessandro Ghignola'
 
 ![](gallery/SAMPLE.BMP)
 
-For a list of changes, see [source/NIVPLUS_CHANGES.TXT](source/NIVPLUS_CHANGES.TXT)
+For a list of changes, see [source/docs/NIVPLUS_CHANGES.TXT](source/docs/NIVPLUS_CHANGES.TXT)
 
 For the manual, see [manual/noctis_iv_manual.html](manual/noctis_iv_manual.html)
 
