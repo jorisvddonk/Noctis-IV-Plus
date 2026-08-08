@@ -71,4 +71,5 @@ fi
 
 
 echo
-dosbox-x -c "mount n \"$MOUNT_DIR\"" -c "n:" -c "cd source" -c "compile.bat" -conf "$CONF_FILE" -exit
+echo "Launching Noctis IV..."
+dosbox-x -c "mount n \"$MOUNT_DIR\"" -c "n:" -c "cd source" -c "compile.bat" -conf "$CONF_FILE" -exit &
