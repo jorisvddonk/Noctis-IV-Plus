@@ -8,6 +8,8 @@ For a list of changes, see [source/docs/NIVPLUS_CHANGES.TXT](source/docs/NIVPLUS
 
 For the manual, see [manual/noctis_iv_manual.html](manual/noctis_iv_manual.html)
 
+To read the manual online, visit [https://nimaid.github.io/noctisiv/](https://nimaid.github.io/noctisiv/)
+
 ## Getting Noctis IV Plus to run on modern computers
 
 Noctis IV was made for MS-DOS and early Windows versions that still supported 16-bit MS-DOS executables natively, and as such, you'll need to be able to run DOS on your computer. To run Noctis IV plus on modern computers, you have three main options, in order of simplest to most complicated to setup:
