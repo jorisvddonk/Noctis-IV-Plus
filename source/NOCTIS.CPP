@@ -4520,5 +4520,5 @@ void ShowAboutPage(char surface) {
 	if (charge<0) {
 		wrouthud (14,160, NULL, "           THIS STARDRIFTER IS EQUIPPED WITH THE OMEGA DRIVE       ");
 	}
-	wrouthud (14,180, NULL, "RELEASE 2.3");
+	wrouthud (14,180, NULL, "RELEASE 2.4");
 }

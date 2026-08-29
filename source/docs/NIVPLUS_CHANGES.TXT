@@ -70,3 +70,21 @@ ADD: 'F1' now shows an about/help page with keyboard shortcuts.
 FIX: 's' and 'p' don't activate their respective functions when labeling, anymore.
 UPDATED manuals.
 UPDATED starmap (2023_10).
+
+Release 2.4:
+ADD: You can now take raw (no location data) wide snapshots on the surface with '.' or 'v'.
+CHANGE: Removed 'Tab' key in the Stardrifter toggling anti aliasing. Replaced with the vanilla visor behavior from the surface. 'PgUp' and 'PgDn' raises and lowers the visor in the Stardrifter now.
+ADD: The mouselook modes available on the surface are now also available in the Stardrifter and can be cycled through using the 'Down Arrow'.
+CHANGE: Surface mouselook mode is now altered with 'Down Arrow' instead of 'Up Arrow', in order to match the controls when in the Stardrifter.
+CHANGE: The compilation process has been simplified, and a new guide has been made in 'source/README.md'.
+CHANGE: The 'source' folder has been cleaned up significantly.
+ADD: DOSBox-X configuration file for optimal performance.
+ADD: Windows '.bat' launcher and compilation scripts (can use installed or portable version of DOSBox-X).
+ADD: *nix '.bash' launcher and compilation scripts.
+CHANGE: Updated the about/help pages to include all controls not already listed in the HUD.
+ADD: 'F2' key now brings up the visual effects menu, which allows the user to use hotkeys to modify graphical tweaks. This works in both the Stardrifter and on the surface, but like the moviemaker menu, it only shows up fully on the surface.
+ADD: 'F2 > T' toggles text and various other HUD elements on or off. These elements will only be invisible when you are not actively in a menu or help page.
+ADD: 'F2 > F' toggles the lens flare mode. By default, lens flares only appear when the visor is down (anti aliasing on). You can now override this and set them to always on or always off.
+ADD: 'F2 > B' toggles between the default HUD border and a seamless one. Combined with turning the HUD text off, this allows for much more scenic screenshots.
+FIX: Main manual has been reformatted and reworked to be compatible with modern browsers. This includes rendering the MIDI music to an MP3.
+UPDATED manual. (new site links)
